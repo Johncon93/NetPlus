@@ -2,10 +2,11 @@
 const express = require("express");
 const {MongoClient} = require('mongodb');
 
-const python = require('./python')
-
 const bodyParser = require('body-parser');
 const urlencodedParser = bodyParser.urlencoded({ extended: false }) // Will be used for POST requests to parse req bodies
+
+// Import Python script
+const python = require('./python')
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}))
@@ -21,7 +22,7 @@ let dbConnection = false;
 async function connectToDatabase(){
 
     try{
-        await client.connect().then(dbConnection = true)
+        await client.connect().then(dbConnection = true).finally(console.log(`Database connection has been established`))
     }
     catch(e){
         console.log(e)
@@ -146,6 +147,7 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
             const parseSite = req.params.siteId;
             const parseNet = req.params.netId;
         
+            // Uses findOne as network_id should be unique
             const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
 
             console.log(networkInfo)
