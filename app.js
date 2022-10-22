@@ -1,4 +1,5 @@
 // Import node packages
+require('dotenv/config');
 const express = require("express");
 const {MongoClient} = require('mongodb');
 
@@ -11,10 +12,10 @@ const python = require('./python')
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(express.static('public')) // Allows use of static files with express, enabled css and client JS to function correctly
+app.set('view-engine', 'ejs')
 
-// Database initiation - ToDO: Static credentials need to be updated and secured in an env file
-const uri = `mongodb+srv://jcon93:ez0uqZfrQgWPPgV9@netdatastore.lgla4f8.mongodb.net/?retryWrites=true&w=majority`
-const client = new MongoClient(uri);
+// Database initiation
+const client = new MongoClient(process.env.MONGODB_PRIV_STRING);
 
 let dbConnection = false;
 
@@ -154,10 +155,12 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
 
             console.log(`Host IP is: ${networkInfo.host}`)
 
+            const testCommand = 'show process cpu history'
             // Test function to prove GNS3 virtual devices accept commands
-            let testCommand = python.CallPython("show run", networkInfo.host)
+            let testResult = python.CallPython(testCommand, networkInfo.host).toString()
 
-            res.send(testCommand)
+            //res.send(testCommand)
+            res.render('result.ejs', {command: testCommand, result: testResult})
         }
         catch(e){
             // Request has failed
