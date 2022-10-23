@@ -59,7 +59,25 @@ app.get("/organisations", async (req, res) => {
 
             const orgDb = await client.db('final_project').collection('organisations').find({}).toArray()
             console.log(orgDb)
-            res.send(orgDb);
+
+            try{
+            
+                let rowData = []
+
+                for(let i = 0; i < orgDb.length; i++){
+                    rowData.push([orgDb[i]['org_id'], orgDb[i]['org_alias'], `<span class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
+                }
+
+                const data = {
+                    headers: ['Org Id', 'Org Alias', 'Status'],
+                    rows: rowData
+                }
+                await closeDatabase().catch(console.error)
+                res.json(data)
+            }
+            catch(error){
+                console.log(`Failed to extract database info, error message \n ${error}`)
+            }
 
         }
         catch(e){
@@ -71,8 +89,6 @@ app.get("/organisations", async (req, res) => {
         // Database connection not established
         res.send("Error! Database connection not initiated")
     }
-
-    await closeDatabase().catch(console.error)
     
 })
 
@@ -101,8 +117,6 @@ app.get("/organisations/:orgId", async (req, res) => {
         // Database connection not established
         res.send("Error! Database connection not initiated")
     }
-
-    await closeDatabase().catch(console.error)
 
 })
 

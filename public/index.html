@@ -2,13 +2,12 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" type="text/css" href="css/style.css" />
-
-    <title>NetPlus</title>
-
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"rel="stylesheet">
+  <title>NetPlus</title>
 </head>
 
 <body>
@@ -21,7 +20,7 @@
           </header>
           <ul class="nav">
             <li>
-              <a href="/organisations"><i class="zmdi zmdi-view-dashboard"></i> Organisations</a>
+              <a href="/organisations"><i></i> Organisations</a>
             </li>
             <li>
               <a href="/organisations/634c27953a958b491363b180"><i class="zmdi zmdi-link"></i> Sites</a> <!-- Should be disabled until Org Selected -->
@@ -38,7 +37,7 @@
           </ul>
         </div>
         <!-- Content -->
-        <div id="content">
+        <div id="content" class="container-fluid">
 
           <nav class="navbar">
             <div class="container-fluid">
@@ -50,9 +49,38 @@
           </nav>
 
           <div class="container-fluid">
-            <h1>Home Page After Logging In</h1>
+            <div class="row">
+              <div class="col-md-8">
+                <h1>Organisations</h1>
+                <div class="org-refresh" data-url = "/organisations" id="tDisplay">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6 col-md-4">
+                <h1>Alerts</h1>
 
-            <p>Table with Org list goes here</p>
+                <!-- Test alert table for positioning purposes -->
+                <table style="width: 100%;">
+                  <tr>
+                    <th>Network</th>
+                    <th>Type</th>
+                    <th>Time</th>
+                  </tr>
+                    <tr>
+                    <td>ISP</td>
+                    <td>IDS</td>
+                    <td>10:00 10/10/22</td>
+                  </tr>
+                  <tr>
+                    <td>POD01-Customer1</td>
+                    <td>NET</td>
+                    <td>10:00 10/10/22</td>
+                  </tr>
+                </table>                
+              </div>
+            </div>
+                
+            </div>
 
           </div>
         </div>
