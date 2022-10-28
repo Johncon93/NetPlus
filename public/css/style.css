@@ -78,21 +78,24 @@ body {
 
 /* Org Table CSS */
 
-.org-refresh {
+.org-refresh,
+.site-refresh {
   margin-top: 10px;
   min-width: 25px;
   font-size: 14px;
   font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-.org-refresh__table tr:hover{
+.org-refresh__table tr:hover,
+.site-refresh__table tr:hover{
   background-color: #5e1fe5 !important;
   opacity: 85%;
   color: white;
   cursor: pointer;
 }
 
-.org-refresh__table{
+.org-refresh__table,
+.site-refresh__table{
 
     border-collapse: collapse;
     width: 100%;
@@ -100,14 +103,17 @@ body {
     border-bottom: 2px solid #5e1fe5;
 }
 
-.org-refresh__table thead tr {
+.org-refresh__table thead tr,
+.site-refresh__table thead tr {
     background: #5e1fe5;
     color:white;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
 .org-refresh__table th,
-.org-refresh__table td {
+.org-refresh__table td,
+.site-refresh__table th,
+.site-refresh__table td {
     vertical-align: middle;
     text-align: center;
     padding: 9px 18px;
@@ -115,25 +121,28 @@ body {
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-.org-refresh__table tbody tr:nth-of-type(even){
+.org-refresh__table tbody tr:nth-of-type(even),
+.site-refresh__table tbody tr:nth-of-type(even){
     background: #eeeeee;
 }
 
 /* Org Table Options CSS */
 
-.org-refresh__options {
-
+.org-refresh__options,
+.site-refresh__options {
     display: flex;
     align-items: center;
     justify-content: flex-end;
     padding: 10px 0;
 }
 
-.org-refresh__options > *:not(:last-child) {
+.org-refresh__options > *:not(:last-child),
+.site-refresh__options > *:not(:last-child) {
     margin-right: 12px;
 }
 
-.org-refresh__button {
+.org-refresh__button,
+.site-refresh__button {
     background: #eeeeee;
     color: #333333;
     border:none;
@@ -146,6 +155,12 @@ body {
     cursor: pointer;
 }
 
-.org-refresh__button > i {
+.org-refresh__button > i,
+.site-refresh__button > i {
     font-size: 1.2em;
+}
+
+#link-button  {
+  color: orange !important;
+  border: 2px white !important;
 }

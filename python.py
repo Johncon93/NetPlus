@@ -1,4 +1,3 @@
-import imp
 from netmiko import ConnectHandler
 import sys
 

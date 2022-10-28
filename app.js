@@ -6,8 +6,8 @@ const {MongoClient} = require('mongodb');
 const bodyParser = require('body-parser');
 const urlencodedParser = bodyParser.urlencoded({ extended: false }) // Will be used for POST requests to parse req bodies
 
-// Import Python script
-const python = require('./python')
+// Import Python.js script
+const python = require('./python.js')
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}))
@@ -25,8 +25,8 @@ async function connectToDatabase(){
     try{
         await client.connect().then(dbConnection = true).finally(console.log(`Database connection has been established`))
     }
-    catch(e){
-        console.log(e)
+    catch(error){
+        console.log(error)
     } 
 
 }
@@ -37,8 +37,8 @@ async function closeDatabase(){
     try{
         await client.close().then(console.log(`Database connection has been closed.`))
     }
-    catch(e){
-        console.log(e)
+    catch(error){
+        console.log(error)
     }
 
     dbConnection = false;
@@ -48,7 +48,7 @@ async function closeDatabase(){
  * Routes used for retrieving data from DB 
  */
 
-// GET organisations from documents within the organisations collection
+// Get Organisations from Db and return as JSON - Used for displaying data in table
 app.get("/organisations", async (req, res) => {
 
     await connectToDatabase().catch(console.error)
@@ -72,7 +72,6 @@ app.get("/organisations", async (req, res) => {
                     headers: ['Org Id', 'Org Alias', 'Status'],
                     rows: rowData
                 }
-                await closeDatabase().catch(console.error)
                 res.json(data)
             }
             catch(error){
@@ -80,9 +79,9 @@ app.get("/organisations", async (req, res) => {
             }
 
         }
-        catch(e){
+        catch(error){
             // Request has failed
-            res.send(`Request has failed, error message \n${e}`)
+            res.send(`Request has failed, error message \n${error}`)
         }
     }
     else{
@@ -106,11 +105,12 @@ app.get("/organisations/:orgId", async (req, res) => {
         
             console.log(siteDb)
         
-            res.send(siteDb)
+            //res.send(siteDb)
+            res.render('organisations.ejs', {orgId: parseData})
         }
-        catch(e){
+        catch(error){
             // Request has failed
-            res.send(`Request has failed, error message \n${e}`)
+            res.send(`Request has failed, error message \n${error}`)
         }
     }
     else{
@@ -136,9 +136,9 @@ app.get("/organisations/:orgId/:siteId", async (req, res) => {
         
             res.send(netDb)
         }
-        catch(e){
+        catch(error){
             // Request has failed
-            res.send(`Request has failed, error message \n${e}`)
+            res.send(`Request has failed, error message \n${error}`)
         }
     }
     else{
@@ -150,6 +150,50 @@ app.get("/organisations/:orgId/:siteId", async (req, res) => {
     await closeDatabase().catch(console.error)
 })
 
+// Get Sites listed to an Org and return as JSON - Used for displaying data in table
+app.get('/sites/:orgId', async (req, res) => {
+
+    await connectToDatabase().catch(console.error)
+
+    if(dbConnection){
+        try{
+
+            const parseData = req.params.orgId;
+            const siteDb = await client.db('final_project').collection('sites').find({org_id: `${parseData}`}).toArray();
+
+            try{
+            
+                let rowData = []
+
+                for(let i = 0; i < siteDb.length; i++){
+                    let address = `${siteDb[i]['site_address']['street']}, ${siteDb[i]['site_address']['town']}, ${siteDb[i]['site_address']['post_code']}`
+                    rowData.push([siteDb[i]['site_id'], siteDb[i]['site_alias'], address, `<span class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
+                }
+
+                const data = {
+                    headers: ['Site Id', 'Site Alias', 'Location', 'Status'],
+                    rows: rowData
+                }
+                res.json(data)
+            }
+            catch(error){
+                console.log(`Failed to extract database info, error message \n ${error}`)
+            }
+        }
+        catch(error){
+            // Request has failed
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        // Database connection not established
+        res.send("Error! Database connection not initiated")
+    }
+    
+    await closeDatabase().catch(console.error)
+})
+
+// Test route to launch Python commands
 app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
   
     await connectToDatabase().catch(console.error)
@@ -173,12 +217,11 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
             // Test function to prove GNS3 virtual devices accept commands
             let testResult = python.CallPython(testCommand, networkInfo.host).toString()
 
-            //res.send(testCommand)
             res.render('result.ejs', {command: testCommand, result: testResult})
         }
-        catch(e){
+        catch(error){
             // Request has failed
-            res.send(`Request has failed, error message \n${e}`)
+            res.send(`Request has failed, error message \n${error}`)
         }
     }
     else{
