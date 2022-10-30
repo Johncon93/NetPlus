@@ -48,6 +48,33 @@ async function closeDatabase(){
  * Routes used for retrieving data from DB 
  */
 
+// Route to pass data between server and client
+app.get("/otp", async (req,res) => {
+
+    // Non-TACACs data
+
+    const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
+
+    let data = {}
+
+    if(parseOTP[0] == 'false'){
+        data = {
+            link:'ssh://admin:admin@192.168.177.5',
+            time: '30'
+        }
+    }
+    else{
+        data = {
+            link: `ssh://johnc:${parseOTP[0]}@192.168.177.5`,
+            time: parseOTP[1]
+        }
+    }
+
+    res.json(data) // Send otp info as JSON
+
+})
+
 // Get Organisations from Db and return as JSON - Used for displaying data in table
 app.get("/organisations", async (req, res) => {
 
@@ -215,7 +242,7 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
 
             const testCommand = 'show process cpu history'
             // Test function to prove GNS3 virtual devices accept commands
-            let testResult = python.CallPython(testCommand, networkInfo.host).toString()
+            let testResult = python.CallDevice(testCommand, networkInfo.host).toString()
 
             res.render('result.ejs', {command: testCommand, result: testResult})
         }

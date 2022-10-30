@@ -163,4 +163,5 @@ body {
 #link-button  {
   color: orange !important;
   border: 2px white !important;
+  cursor: pointer;
 }

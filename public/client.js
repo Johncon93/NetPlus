@@ -1,5 +1,43 @@
 /* Client side JavaScript */
 
+// Update SSH Link with router information
+async function GenerateSSH(){
+    const link = document.getElementById('link-button');
+    link.innerHTML = 'Loading...'
+    const response = await fetch(link.dataset.url)
+    const data = await response.json()
+
+    //link.href = 'ssh://admin:admin@192.168.177.5' // Non TACACS test link
+    
+    link.href = data.link // Set href data to be the router SSH URL e.g. ssh://user:otp@routerip
+
+    LinkTimer(data.time) // Call interval function to set countdown timer until expiration
+
+}
+
+function LinkTimer(time){
+
+    const link = document.getElementById('link-button');
+
+    const timeInterval = setInterval(() => { // Run function in intervals of 1 sec
+        
+        if(time >= 0){ // Check if time expired
+
+            link.innerHTML = `Link expires in ${time.toString()}` //Update display text with remaining time
+            time -= 1
+        }
+        else{
+            // Time has expired, remove elements to invalidate link
+            link.innerHTML = 'Link Expired'
+            link.removeAttribute('onclick')
+            link.removeAttribute('href')
+            link.removeAttribute('data-url')
+            clearInterval(timeInterval) //Clear interval to prevent never-ending loop
+        }
+    }, 1000);
+
+}
+
 // Function to navigate to the /organisations/:orgId URL
 function RedirectOrg(orgId){
 
@@ -41,6 +79,7 @@ async function UpdateOrgTable(root){
     root.querySelector(".org-refresh__button").classList.add("org-refresh__button");
     
     // Retrieve JSON from /organisations url
+    console.log(root.dataset.url)
     const response = await fetch(root.dataset.url);
     const data = await response.json()
 
