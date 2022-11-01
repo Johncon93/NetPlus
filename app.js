@@ -16,19 +16,16 @@ app.set('view-engine', 'ejs')
 
 // Database initiation
 const client = new MongoClient(process.env.MONGODB_PRIV_STRING);
-
 let dbConnection = false;
 
 // Connect to Database
 async function connectToDatabase(){
-
     try{
         await client.connect().then(dbConnection = true).finally(console.log(`Database connection has been established`))
     }
     catch(error){
         console.log(error)
     } 
-
 }
 
 // Close database
@@ -44,36 +41,36 @@ async function closeDatabase(){
     dbConnection = false;
 }
 
-/* 
- * Routes used for retrieving data from DB 
- */
-
 // Route to pass data between server and client
 app.get("/otp", async (req,res) => {
-
-    // Non-TACACs data
 
     const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
     const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
 
     let data = {}
 
-    if(parseOTP[0] == 'false'){
+    // Check if TACACS+ server is down
+    if(parseOTP[0] == 'false'){// Server Down, retrieve and send backup data
         data = {
             link:'ssh://admin:admin@192.168.177.5',
             time: '30'
         }
     }
-    else{
+    else{ // Server is Up, retrieve and send TACACs data
         data = {
             link: `ssh://johnc:${parseOTP[0]}@192.168.177.5`,
             time: parseOTP[1]
         }
     }
 
-    res.json(data) // Send otp info as JSON
+    const secret = process.env.SECRET_KEY
 
+    res.json(data) // Send otp info as JSON
 })
+
+/* 
+ * Routes used for retrieving data from DB 
+ */
 
 // Get Organisations from Db and return as JSON - Used for displaying data in table
 app.get("/organisations", async (req, res) => {
@@ -92,7 +89,7 @@ app.get("/organisations", async (req, res) => {
                 let rowData = []
 
                 for(let i = 0; i < orgDb.length; i++){
-                    rowData.push([orgDb[i]['org_id'], orgDb[i]['org_alias'], `<span class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
+                    rowData.push([orgDb[i]['org_id'], orgDb[i]['org_alias'], `<span id="ok-icon" class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
                 }
 
                 const data = {
@@ -129,11 +126,8 @@ app.get("/organisations/:orgId", async (req, res) => {
             const parseData = req.params.orgId;
 
             const siteDb = await client.db('final_project').collection('sites').find({org_id: `${parseData}`}).toArray();
-        
-            console.log(siteDb)
-        
-            //res.send(siteDb)
-            res.render('organisations.ejs', {orgId: parseData})
+
+            res.render('sites.ejs', {orgId: parseData})
         }
         catch(error){
             // Request has failed
@@ -159,9 +153,7 @@ app.get("/organisations/:orgId/:siteId", async (req, res) => {
         
             const netDb = await client.db('final_project').collection('networks').find({site_id: `${parseSite}`}).toArray();
         
-            console.log(netDb)
-        
-            res.send(netDb)
+            res.render('networks.ejs', {orgId: parseOrg, siteId: parseSite})
         }
         catch(error){
             // Request has failed
@@ -194,11 +186,53 @@ app.get('/sites/:orgId', async (req, res) => {
 
                 for(let i = 0; i < siteDb.length; i++){
                     let address = `${siteDb[i]['site_address']['street']}, ${siteDb[i]['site_address']['town']}, ${siteDb[i]['site_address']['post_code']}`
-                    rowData.push([siteDb[i]['site_id'], siteDb[i]['site_alias'], address, `<span class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
+                    rowData.push([siteDb[i]['site_id'], siteDb[i]['site_alias'], address, `<span id="ok-icon" class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
                 }
 
                 const data = {
                     headers: ['Site Id', 'Site Alias', 'Location', 'Status'],
+                    rows: rowData
+                }
+                res.json(data)
+            }
+            catch(error){
+                console.log(`Failed to extract database info, error message \n ${error}`)
+            }
+        }
+        catch(error){
+            // Request has failed
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        // Database connection not established
+        res.send("Error! Database connection not initiated")
+    }
+    
+    await closeDatabase().catch(console.error)
+})
+
+// Get Networks listed to a site and return as JSON - Used for displaying data in table
+app.get('/networks/:orgId/:siteId', async (req, res) => {
+
+    await connectToDatabase().catch(console.error)
+
+    if(dbConnection){
+        try{
+
+            const parseSite = req.params.siteId;
+            const netDb = await client.db('final_project').collection('networks').find({site_id: `${parseSite}`}).toArray();
+
+            try{
+
+                let rowData = []
+
+                for(let i = 0; i < netDb.length; i++){
+                    rowData.push([netDb[i]['network_id'], netDb[i]['alias_name'], netDb[i]['host'], netDb[i]['network_type'], `<span id="ok-icon" class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
+                }
+
+                const data = {
+                    headers: ['Network Id', 'Network Alias', 'Host IP', 'Network type', 'Status'],
                     rows: rowData
                 }
                 res.json(data)
@@ -228,7 +262,6 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
     if(dbConnection){
 
         try{
-
             const parseOrg = req.params.orgId;
             const parseSite = req.params.siteId;
             const parseNet = req.params.netId;
@@ -236,15 +269,12 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
             // Uses findOne as network_id should be unique
             const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
 
-            console.log(networkInfo)
-
-            console.log(`Host IP is: ${networkInfo.host}`)
-
             const testCommand = 'show process cpu history'
+
             // Test function to prove GNS3 virtual devices accept commands
             let testResult = python.CallDevice(testCommand, networkInfo.host).toString()
 
-            res.render('result.ejs', {command: testCommand, result: testResult})
+            res.render('result.ejs', {command: testCommand, result: testResult, orgId: parseOrg, siteId: parseSite, netId: parseNet})
         }
         catch(error){
             // Request has failed

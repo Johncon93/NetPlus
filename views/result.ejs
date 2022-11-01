@@ -22,19 +22,16 @@
           </header>
           <ul class="nav">
             <li>
-              <a href="/organisations"><i class=" zmdi-view-dashboard"></i> Organisations</a>
+              <a href="/"><i class=" zmdi-view-dashboard"></i> Organisations</a>
             </li>
             <li>
-              <a href="/organisations/634c27953a958b491363b180"><i class="zmdi zmdi-link"></i> Sites</a> <!-- Should be disabled until Org Selected -->
+              <a href="/organisations/<%=orgId%>"><i class="zmdi zmdi-link"></i> Sites</a> <!-- Should be disabled until Org Selected -->
             </li>
             <li>
-                <a href="/organisations/634c27953a958b491363b180/634c28603a958b491363b182"><i class="zmdi zmdi-link"></i> Networks</a> <!-- Should be disabled until Site Selected -->
+                <a href="/organisations/<%=orgId%>/<%=siteId%>"><i class="zmdi zmdi-link"></i> Networks</a> <!-- Should be disabled until Site Selected -->
             </li>
             <li>
-              <a href="/organisations/634c27953a958b491363b180/634c28603a958b491363b182/634c2acd3a958b491363b184"><i class="zmdi zmdi-link"></i> Test GNS3</a> <!-- Temp button to test GNS3 integration -->
-            </li>
-            <li>
-                <a onclick="testFunction()"><i class="zmdi zmdi-link"></i> Client JS Test </a> <!-- Temp button to test client side JS -->
+              <a href="/organisations/<%=orgId%>/<%=siteId%>/<%=netId%>"><i class="zmdi zmdi-link"></i> Test GNS3</a> <!-- Temp button to test GNS3 integration -->
             </li>
           </ul>
         </div>
@@ -44,7 +41,7 @@
           <nav class="navbar">
             <div class="container-fluid">
                   <ul class="nav navbar-nav">
-                    <li><a href="/">Example navigation URI - /{org_alias}/{site_alias}/{net_alias}</a></li>
+                    <li><a href="/">Example navigation URI - /<%=orgId%>/<%=siteId%>/<%=netId%></a></li>
                   </ul>
                 </div>
             </div>
