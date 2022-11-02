@@ -111,9 +111,18 @@ async function UpdateOrgTable(root){
         table.querySelector("thead tr").insertAdjacentHTML("beforeend", `<th>${header}</th>`);
     }
     
+    const selectDropOrgId = document.getElementById('orgDropDownId');
+    selectDropOrgId.options.length = 0
+
     // Populate table with rowData
     let i = 1;
     for(const row of data.rows){
+
+        var newOption = document.createElement("option");
+        newOption.textContent = row[1];
+        newOption.value = row[0];
+
+        selectDropOrgId.appendChild(newOption);
 
         table.querySelector("tbody").insertAdjacentHTML("beforeend", `
             <div class="col-12">
@@ -147,9 +156,18 @@ async function UpdateSiteTable(root){
         table.querySelector("thead tr").insertAdjacentHTML("beforeend", `<th>${header}</th>`);
     }
     
+    const selectDropSiteId = document.getElementById('siteDropDownId');
+    selectDropSiteId.options.length = 0
+
     // Populate table with rowData
     let i = 1;
     for(const row of data.rows){
+
+        var newOption = document.createElement("option");
+        newOption.textContent = row[1];
+        newOption.value = row[0];
+
+        selectDropSiteId.appendChild(newOption);
 
         table.querySelector("tbody").insertAdjacentHTML("beforeend", `
             <div class="col-12">
@@ -183,9 +201,18 @@ async function UpdateNetworkTable(root){
         table.querySelector("thead tr").insertAdjacentHTML("beforeend", `<th>${header}</th>`);
     }
     
+    const selectDropNetworkId = document.getElementById('networkDropDownId');
+    selectDropNetworkId.options.length = 0
+
     // Populate table with rowData
     let i = 1;
     for(const row of data.rows){
+
+        var newOption = document.createElement("option");
+        newOption.textContent = row[1];
+        newOption.value = row[0];
+        
+        selectDropNetworkId.appendChild(newOption);
 
         table.querySelector("tbody").insertAdjacentHTML("beforeend", `
             <div class="col-12">

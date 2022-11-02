@@ -58,7 +58,8 @@ body {
   color: #fff;
 }
 
-#sidebar .nav a{
+#sidebar .nav a,
+#sidebar .nav label{
   background: none;
   border-bottom: 1px solid #455A64;
   color: #CFD8DC;
@@ -66,15 +67,20 @@ body {
   padding: 16px 24px;
 }
 
-#sidebar .nav a:hover{
+#sidebar .nav a:hover,
+#sidebar .nav label:hover{
   background: none;
   color: #ECEFF1;
 }
 
-#sidebar .nav a i{
+#sidebar .nav a i,
+#sidebar .nav label{
   margin-right: 16px;
 }
 
+#sidebar .custom-select {
+margin-left: 20px;
+}
 
 /* Org Table CSS */
 
@@ -180,4 +186,9 @@ body {
 
 #ok-icon {
   color: green;
+}
+
+.custom-select{
+  width: 200px;
+  align-content: center;
 }

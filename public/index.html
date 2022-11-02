@@ -20,13 +20,28 @@
           </header>
           <ul class="nav">
             <li>
-              <a href="/"><i></i> Organisations</a>
+              <a href="/organisations"><i class="zmdi zmdi-link"></i>Organisations</a>
+              <form class="form-group">
+                <select class="custom-select" id="orgDropDownId" data-width="100%">
+                  <option selected>Loading...</option>
+                </select>
+              </form>
             </li>
             <li>
-              <a href="/organisations/634c27953a958b491363b180"><i class="zmdi zmdi-link"></i> Sites</a> <!-- Should be disabled until Org Selected -->
+              <a><i class="zmdi zmdi-link"></i>Sites</a>
+              <form class="form-group">
+                <select class="custom-select" id="siteDropDownId" data-width="100%" disabled>
+                  <option selected>Choose...</option>
+                </select>
+              </form>
             </li>
             <li>
-                <a href="/organisations/634c27953a958b491363b180/634c28603a958b491363b182"><i class="zmdi zmdi-link"></i> Networks</a> <!-- Should be disabled until Site Selected -->
+              <a><i class="zmdi zmdi-link"></i>Networks</a>
+              <form class="form-group">
+                <select class="custom-select" id="networkDropDownId" data-width="100%" disabled>
+                  <option selected>Choose...</option>
+                </select>
+              </form>
             </li>
             <li>
               <a href="/organisations/634c27953a958b491363b180/634c28603a958b491363b182/634c2acd3a958b491363b184"><i class="zmdi zmdi-link"></i> Test GNS3</a> <!-- Temp button to test GNS3 integration -->
@@ -43,7 +58,7 @@
           <nav class="navbar">
             <div class="container-fluid">
                   <ul class="nav navbar-nav">
-                    <li><a href="/">Example navigation URI - /{org_alias}/{site_alias}/{net_alias}</a></li>
+                    <li><a href="/">/organisations</a></li>
                   </ul>
                 </div>
             </div>
@@ -57,9 +72,8 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-6 col-md-4">
+              <div class="col-md-4">
                 <h1>Alerts</h1>
-
                 <!-- Test alert table for positioning purposes -->
                 <table style="width: 100%;">
                   <tr>
