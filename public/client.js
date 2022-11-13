@@ -93,6 +93,15 @@ function TdClick(tData){
 
 }
 
+// onChange Function to update URI based on Organisation drop down selection
+function OrgChange(){
+
+    var orgDropInfo = document.getElementById("orgDropDownId");
+
+    RedirectOrg(orgDropInfo.value)
+
+}
+
 // Update Organisation Table
 async function UpdateOrgTable(root){
 
@@ -118,6 +127,7 @@ async function UpdateOrgTable(root){
     let i = 1;
     for(const row of data.rows){
 
+        console.log(row)
         var newOption = document.createElement("option");
         newOption.textContent = row[1];
         newOption.value = row[0];
@@ -134,6 +144,8 @@ async function UpdateOrgTable(root){
 
         i += 1
     }
+
+    selectDropOrgId.addEventListener('change', OrgChange);
 
     root.querySelector(".org-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
 }
@@ -163,6 +175,7 @@ async function UpdateSiteTable(root){
     let i = 1;
     for(const row of data.rows){
 
+        console.log(row)
         var newOption = document.createElement("option");
         newOption.textContent = row[1];
         newOption.value = row[0];
@@ -208,6 +221,7 @@ async function UpdateNetworkTable(root){
     let i = 1;
     for(const row of data.rows){
 
+        console.log(row)
         var newOption = document.createElement("option");
         newOption.textContent = row[1];
         newOption.value = row[0];
