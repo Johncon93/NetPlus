@@ -49,6 +49,10 @@ function RedirectSite(orgId, siteId){
     window.location.href = `/organisations/${orgId}/${siteId}`
 
 }
+// Load device page for target network.
+function RedirectNetwork(orgId, siteId, netId){
+    alert(`Pending Implementation: OrgId: ${orgId} SiteId: ${siteId} NetId: ${netId}`)
+}
 
 function TrClick(tRow){
 
@@ -123,6 +127,12 @@ async function UpdateOrgTable(root){
     const selectDropOrgId = document.getElementById('orgDropDownId');
     selectDropOrgId.options.length = 0
 
+    var initialOption = document.createElement("option");
+    initialOption.textContent = 'Select an organisation...';
+    initialOption.value = null;
+
+    selectDropOrgId.appendChild(initialOption);
+
     // Populate table with rowData
     let i = 1;
     for(const row of data.rows){
@@ -150,6 +160,16 @@ async function UpdateOrgTable(root){
     root.querySelector(".org-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
 }
 
+// onChange Function to update URI based on Site drop down selection
+function SiteChange(){
+
+    var siteDropInfo = document.getElementById("siteDropDownId");
+    var selectDropOrgId = document.getElementById('orgDropDownId');
+
+    RedirectSite(selectDropOrgId.value, siteDropInfo.value)
+
+}
+
 async function UpdateSiteTable(root){
 
     root.querySelector(".site-refresh__button").classList.add("site-refresh__button");
@@ -171,6 +191,12 @@ async function UpdateSiteTable(root){
     const selectDropSiteId = document.getElementById('siteDropDownId');
     selectDropSiteId.options.length = 0
 
+    var initialOption = document.createElement("option");
+    initialOption.textContent = 'Select a site...';
+    initialOption.value = null;
+
+    selectDropSiteId.appendChild(initialOption);
+    
     // Populate table with rowData
     let i = 1;
     for(const row of data.rows){
@@ -193,7 +219,20 @@ async function UpdateSiteTable(root){
         i += 1
     }
 
+    selectDropSiteId.addEventListener('change', SiteChange);
+
     root.querySelector(".site-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
+}
+
+// onChange Function to update URI based on Network drop down selection
+function NetworkChange(){
+
+    var selectDropNetId = document.getElementById("networkDropDownId");
+    var selectDropOrgId = document.getElementById('orgDropDownId');
+    var selectDropSiteId = document.getElementById("siteDropDownId");
+
+    RedirectNetwork(selectDropOrgId.value, selectDropSiteId.value, selectDropNetId.value)
+
 }
 
 async function UpdateNetworkTable(root){
@@ -217,6 +256,12 @@ async function UpdateNetworkTable(root){
     const selectDropNetworkId = document.getElementById('networkDropDownId');
     selectDropNetworkId.options.length = 0
 
+    var initialOption = document.createElement("option");
+    initialOption.textContent = 'Select a network...';
+    initialOption.value = null;
+
+    selectDropNetworkId.appendChild(initialOption);
+
     // Populate table with rowData
     let i = 1;
     for(const row of data.rows){
@@ -238,6 +283,8 @@ async function UpdateNetworkTable(root){
 
         i += 1
     }
+
+    selectDropNetworkId.addEventListener('change', NetworkChange);
 
     root.querySelector(".network-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
 }
@@ -285,19 +332,84 @@ if(document.querySelectorAll(".org-refresh[data-url]").length > 0){
         UpdateOrgTable(root); // Call function to populate table from /organisations
     }
 
-    /*
     // Code used to update alert table
     async function UpdateAlertTable(root){
+
+        root.querySelector(".alert-refresh__button").classList.add("alert-refresh__button");
+    
+        // Retrieve JSON from /organisations url
+        const response = await fetch(root.dataset.url);
+        const data = await response.json()
+    
+        const table = root.querySelector(".alert-refresh__table");
+        table.querySelector("thead tr").innerHTML = "";
+        table.querySelector("tbody").innerHTML = "";
+    
+        // Populate table with headers
+        for(const header of data.headers){
+            table.querySelector("thead tr").insertAdjacentHTML("beforeend", `<th>${header}</th>`);
+        }
+    
+        // Populate table with rowData
+        let i = 1;
+        for(const row of data.rows){
+    
+            table.querySelector("tbody").insertAdjacentHTML("beforeend", `
+                <div class="col-12">
+                    <tr onclick="TrClick(this);" id="trAlertId${i}">
+                        ${row.map(col => `<td onclick="TdClick(this);" value="tdAlertId${i}">${col}</td>`).join("")}
+                    </tr>
+                </div>  
+            `);
+    
+            i += 1
+        }
+    
+        root.querySelector(".alert-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
 
     }
 
     // Create Alert Table and then call function to populate it
     for(const root of document.querySelectorAll(".alert-refresh[data-url]")){
 
+        // Create table element
+        const table = document.createElement("table");
+        table.classList.add("alert-refresh__table");
+        table.setAttribute("style", "table-layout:fixed;")
+        table.innerHTML = `
+        <div class="container-fluid">
+            <thead>
+                <tr></tr>
+            </thead>
+            <tbody>
+                <tr onclick="TrClick(this);">
+                    <td onclick="TdClick(this);">Loading</td>
+                </tr>
+            </tbody>    
+        </div>        
+        `;
+        
+        // Create div element
+        const options = document.createElement("div");
+        options.classList.add("alert-refresh__options");
+        options.innerHTML = `
+            <span class="alert-refresh__label">Table last updated: never</span>
+            <button type="button" class="alert-refresh__button">
+                <i class="material-icons":>refresh</i>
+                </button>
+        `;
+
+        // Push div and table to original div
+        root.append(table, options)
+        
+        // Add OnClick function to button that refreshes Organisation list
+        options.querySelector(".alert-refresh__button").addEventListener("click", () => {
+            UpdateAlertTable(root)
+        })
 
         UpdateAlertTable(root);
     }
-    */
+
 }
 else if (document.querySelectorAll(".site-refresh[data-url]").length > 0){
 

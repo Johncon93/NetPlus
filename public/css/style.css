@@ -86,7 +86,8 @@ margin-left: 20px;
 
 .org-refresh,
 .site-refresh,
-.network-refresh {
+.network-refresh,
+.alert-refresh {
   margin-top: 10px;
   min-width: 25px;
   font-size: 14px;
@@ -95,7 +96,8 @@ margin-left: 20px;
 
 .org-refresh__table tr:hover,
 .site-refresh__table tr:hover,
-.network-refresh__table tr:hover{
+.network-refresh__table tr:hover,
+.alert-refresh__table tr:hover{
   background-color: #37474F !important;
   opacity: 85%;
   color: white;
@@ -104,7 +106,8 @@ margin-left: 20px;
 
 .org-refresh__table,
 .site-refresh__table,
-.network-refresh__table{
+.network-refresh__table,
+.alert-refresh__table{
 
     border-collapse: collapse;
     width: 100%;
@@ -114,7 +117,8 @@ margin-left: 20px;
 
 .org-refresh__table thead tr,
 .site-refresh__table thead tr,
-.network-refresh__table thead tr
+.network-refresh__table thead tr,
+.alert-refresh__table thead tr
  {
     background: #263238;
     color:white;
@@ -126,7 +130,9 @@ margin-left: 20px;
 .site-refresh__table th,
 .site-refresh__table td,
 .network-refresh__table th,
-.network-refresh__table td {
+.network-refresh__table td,
+.alert-refresh__table th,
+.alert-refresh__table td {
     vertical-align: middle;
     text-align: center;
     padding: 9px 18px;
@@ -136,7 +142,8 @@ margin-left: 20px;
 
 .org-refresh__table tbody tr:nth-of-type(even),
 .site-refresh__table tbody tr:nth-of-type(even),
-.network-refresh__table tbody tr:nth-of-type(even){
+.network-refresh__table tbody tr:nth-of-type(even),
+.alert-refresh__table tbody tr:nth-of-type(even){
     background: #eeeeee;
 }
 
@@ -144,7 +151,8 @@ margin-left: 20px;
 
 .org-refresh__options,
 .site-refresh__options,
-.network-refresh__options {
+.network-refresh__options,
+.alert-refresh__options {
     display: flex;
     align-items: center;
     justify-content: flex-end;
@@ -153,13 +161,15 @@ margin-left: 20px;
 
 .org-refresh__options > *:not(:last-child),
 .site-refresh__options > *:not(:last-child),
-.network-refresh__options > *:not(:last-child) {
+.network-refresh__options > *:not(:last-child),
+.alert-refresh__options > *:not(:last-child)  {
     margin-right: 12px;
 }
 
 .org-refresh__button,
 .site-refresh__button,
-.network-refresh__button {
+.network-refresh__button,
+.alert-refresh__button {
     background: #eeeeee;
     color: #333333;
     border:none;
@@ -174,7 +184,8 @@ margin-left: 20px;
 
 .org-refresh__button > i,
 .site-refresh__button > i,
-.network-refresh__button > i {
+.network-refresh__button > i,
+.alert-refresh__button > i  {
     font-size: 1.2em;
 }
 

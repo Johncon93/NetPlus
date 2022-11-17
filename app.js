@@ -7,7 +7,8 @@ const bodyParser = require('body-parser');
 const urlencodedParser = bodyParser.urlencoded({ extended: false }) // Will be used for POST requests to parse req bodies
 
 // Import Python.js script
-const python = require('./python.js')
+const python = require('./python.js');
+const { response } = require('express');
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}))
@@ -287,6 +288,46 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
     }
     
     await closeDatabase().catch(console.error)
+})
+
+app.get('/alerts', async (req, res) =>{
+
+    await connectToDatabase().catch(console.error)
+
+    if(dbConnection){
+
+        try{
+
+            const alertInfo = await client.db('final_project').collection('alerts').find().toArray();
+
+            try{
+            
+                let rowData = []
+
+                for(let i = 0; i < alertInfo.length; i++){
+
+                    rowData.push([alertInfo[i]['time'], alertInfo[i]['network'], alertInfo[i]['priority']])
+                }
+
+                const data = {
+                    headers: ['Time', 'Network', 'Priority'],
+                    rows: rowData
+                }
+                res.json(data)
+            }
+            catch(error){
+                console.log(`Failed to extract database info, error message \n ${error}`)
+            }
+
+        }
+        catch(error){
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        res.send('Error! Database connection not initiated.')
+    }
+
 })
 
 // Listen on port 8443, currently using HTML ToDO: secure with https
