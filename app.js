@@ -330,5 +330,7 @@ app.get('/alerts', async (req, res) =>{
 
 })
 
+python.InitBGP()
+
 // Listen on port 8443, currently using HTML ToDO: secure with https
 app.listen(8443, () => console.log("Server active"));

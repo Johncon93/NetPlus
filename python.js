@@ -22,3 +22,14 @@ exports.CallOTP = (secret) => {
     return response.toString();
 
 }
+
+// Launch child process to iniitate BGP
+
+exports.InitBGP = () => {
+
+
+    const { exec } = require('node:child_process');
+
+    exec('"/Users/macbook/exabgp-git/sbin/exabgp" /Users/macbook/exabgp-git/sbin/conf.ini');
+
+}
