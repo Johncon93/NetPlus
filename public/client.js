@@ -23,6 +23,7 @@ function LinkTimer(time){
         if(time >= 0){ // Check if time expired
 
             link.innerHTML = `Link expires in ${time.toString()}` //Update display text with remaining time
+            link.style.border = '2px'
             time -= 1
         }
         else{

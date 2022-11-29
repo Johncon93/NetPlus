@@ -330,7 +330,15 @@ app.get('/alerts', async (req, res) =>{
 
 })
 
-python.InitBGP()
+function InitiateBGP(){
 
+    let result = python.InitBGP()
+    return result;
+}
+
+// Initiate BGP using AS 100 and advertise 2x test routes
+let bgpInit = InitiateBGP()
+console.log(`BGP Status: ${bgpInit[0]}\n${bgpInit[1]}`)
+ 
 // Listen on port 8443, currently using HTML ToDO: secure with https
 app.listen(8443, () => console.log("Server active"));

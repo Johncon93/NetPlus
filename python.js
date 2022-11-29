@@ -27,9 +27,16 @@ exports.CallOTP = (secret) => {
 
 exports.InitBGP = () => {
 
+    let result = []
 
-    const { exec } = require('node:child_process');
+    try{
+        const { exec } = require('node:child_process');
+        exec('"./exabgp-git/sbin/exabgp" ./exabgp-git/sbin/conf.ini');
+        result = [true, "BGP Initiated"]
+    }
+    catch(error){
+        result = [false, error.toString()]
+    }
 
-    exec('"/Users/macbook/exabgp-git/sbin/exabgp" /Users/macbook/exabgp-git/sbin/conf.ini');
-
+    return result;
 }

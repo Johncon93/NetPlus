@@ -189,14 +189,24 @@ margin-left: 20px;
     font-size: 1.2em;
 }
 
-#link-button  {
-  color: orange !important;
-  border: 2px white !important;
+#link-button {
+  color: white !important;
   cursor: pointer;
+  padding: 16px 24px;
+  margin-right: 16px;
+  text-align: center;
 }
 
 #ok-icon {
   color: green;
+}
+
+.btn-ssh {
+  background-color: rgb(28, 119, 69) !important;
+}
+
+.btn-ssh:hover {
+  background-color: rgb(118, 198, 118) !important;
 }
 
 .custom-select{
