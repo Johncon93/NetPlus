@@ -1,6 +1,6 @@
 Building configuration...
 
-Current configuration : 4780 bytes
+Current configuration : 4442 bytes
 !
 upgrade fpd auto
 version 12.4
@@ -8,7 +8,7 @@ service timestamps debug datetime msec
 service timestamps log datetime msec
 no service password-encryption
 !
-hostname ISP-POD1-R01
+hostname ISP-POD2-R02
 !
 boot-start-marker
 boot-end-marker
@@ -33,11 +33,6 @@ ip cef
 !
 ip dhcp excluded-address 192.168.177.1 192.168.177.199
 ip dhcp excluded-address 192.168.177.201 192.168.177.254
-!
-ip dhcp pool TACACS
-   network 192.168.177.0 255.255.255.0
-   default-router 192.168.177.2
-   dns-server 8.8.8.8 8.8.4.4
 !
 !
 no ip domain lookup
@@ -79,119 +74,113 @@ ip ssh version 2
 !
 !
 interface Loopback0
- description ***Loopback***
- ip address 1.1.1.1 255.255.255.255
+ ip address 2.2.2.2 255.255.255.255
 !
-interface Loopback30
- description ***Network-30***
- ip address 192.168.177.30 255.255.255.255
+interface Loopback40
+ description ***Network-40***
+ ip address 192.168.177.40 255.255.255.255
 !
-interface Loopback31
- description ***Network-31***
- ip address 192.168.177.31 255.255.255.255
+interface Loopback41
+ description ***Network-41***
+ ip address 192.168.177.41 255.255.255.255
 !
-interface Loopback32
- description ***Network-32***
- ip address 192.168.177.32 255.255.255.255
+interface Loopback42
+ description ***Network-42***
+ ip address 192.168.177.42 255.255.255.255
 !
-interface Loopback33
- description ***Network-33***
- ip address 192.168.177.33 255.255.255.255
-!
-interface Loopback34
+interface Loopback43
  description ***Network-34***
- ip address 192.168.177.34 255.255.255.255
+ ip address 192.168.177.43 255.255.255.255
 !
-interface Loopback35
- description ***Network-35***
- ip address 192.168.177.35 255.255.255.255
+interface Loopback44
+ description ***Network-44***
+ ip address 192.168.177.44 255.255.255.255
 !
-interface Loopback37
- description ***Network-37***
- ip address 192.168.177.37 255.255.255.255
+interface Loopback45
+ description ***Network-45***
+ ip address 192.168.177.45 255.255.255.255
 !
-interface Loopback63
- description ***Network-36***
- ip address 192.168.177.36 255.255.255.255
+interface Loopback46
+ description ***Network-46***
+ ip address 192.168.177.46 255.255.255.255
+!
+interface Loopback47
+ description ***Network-47***
+ ip address 192.168.177.47 255.255.255.255
 !
 interface FastEthernet0/0
  description ***WAN_Uplink***
- ip address 192.168.177.5 255.255.255.248
+ ip address 192.168.177.6 255.255.255.248
  ip nat outside
  ip virtual-reassembly
  duplex half
 !
 interface GigabitEthernet1/0
- ip address 192.168.177.193 255.255.255.240
+ no ip address
  negotiation auto
 !
 interface GigabitEthernet2/0
- description ***VM_Uplink***
- ip address 192.168.177.209 255.255.255.240
- ip nat inside
- ip virtual-reassembly
+ no ip address
  negotiation auto
 !
-interface Serial3/0
- description ***Network-30***
- ip address 192.168.30.1 255.255.255.252
+interface Serial4/0
+ description ***Network-40***
+ ip address 192.168.40.1 255.255.255.252
  ip nat inside
  ip virtual-reassembly
  serial restart-delay 0
 !
-interface Serial3/1
- description ***Network-31***
- ip address 192.168.31.1 255.255.255.252
+interface Serial4/1
+ description ***Network-41***
+ ip address 192.168.41.1 255.255.255.252
  ip nat inside
  ip virtual-reassembly
  serial restart-delay 0
 !
-interface Serial3/2
- description ***Network-32***
- ip address 192.168.32.1 255.255.255.252
+interface Serial4/2
+ description ***Network-42***
+ ip address 192.168.42.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
+ serial restart-delay 0
+!
+interface Serial4/3
+ ip address 192.168.43.1 255.255.255.252
  ip nat inside
  ip virtual-reassembly
  shutdown
  serial restart-delay 0
 !
-interface Serial3/3
- description ***Network-33***
- ip address 192.168.33.1 255.255.255.252
+interface Serial4/4
+ description ***Network-44***
+ ip address 192.168.44.1 255.255.255.252
  ip nat inside
  ip virtual-reassembly
  serial restart-delay 0
 !
-interface Serial3/4
- description ***Network-34***
- ip address 192.168.34.1 255.255.255.252
+interface Serial4/5
+ description ***Network-45***
+ ip address 192.168.45.1 255.255.255.252
  ip nat inside
  ip virtual-reassembly
  serial restart-delay 0
 !
-interface Serial3/5
- description ***Network-35***
- ip address 192.168.35.1 255.255.255.252
+interface Serial4/6
+ ip address 192.168.46.1 255.255.255.252
  ip nat inside
  ip virtual-reassembly
  serial restart-delay 0
 !
-interface Serial3/6
- description ***Network-36***
- ip address 192.168.36.1 255.255.255.252
+interface Serial4/7
+ description ***Network-47***
+ ip address 192.168.47.1 255.255.255.252
  ip nat inside
  ip virtual-reassembly
  serial restart-delay 0
 !
-interface Serial3/7
- description ***Network-37***
- ip address 192.168.37.1 255.255.255.252
- ip nat inside
- ip virtual-reassembly
- serial restart-delay 0
-!
-router bgp 100
+router bgp 200
  bgp log-neighbor-changes
- neighbor 192.168.177.1 remote-as 100
+ neighbor 192.168.177.1 remote-as 200
  neighbor 192.168.177.1 update-source FastEthernet0/0
  !
  address-family ipv4
@@ -206,14 +195,14 @@ no ip http server
 no ip http secure-server
 !
 !
-ip nat inside source static 192.168.30.2 192.168.177.130
-ip nat inside source static 192.168.31.2 192.168.177.131
-ip nat inside source static 192.168.32.2 192.168.177.132
-ip nat inside source static 192.168.33.2 192.168.177.133
-ip nat inside source static 192.168.34.2 192.168.177.134
-ip nat inside source static 192.168.35.2 192.168.177.135
-ip nat inside source static 192.168.36.2 192.168.177.136
-ip nat inside source static 192.168.37.2 192.168.177.137
+ip nat inside source static 192.168.40.2 192.168.177.140
+ip nat inside source static 192.168.41.2 192.168.177.141
+ip nat inside source static 192.168.42.2 192.168.177.142
+ip nat inside source static 192.168.43.2 192.168.177.143
+ip nat inside source static 192.168.44.2 192.168.177.144
+ip nat inside source static 192.168.45.2 192.168.177.145
+ip nat inside source static 192.168.46.2 192.168.177.146
+ip nat inside source static 192.168.47.2 192.168.177.147
 !
 access-list 34 permit 192.168.34.0 0.0.0.4
 no cdp log mismatch duplex

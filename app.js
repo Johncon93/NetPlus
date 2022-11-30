@@ -83,6 +83,7 @@ app.get("/organisations", async (req, res) => {
         try{
 
             const orgDb = await client.db('final_project').collection('organisations').find({}).toArray()
+
             console.log(orgDb)
 
             try{

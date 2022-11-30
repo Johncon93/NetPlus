@@ -1,6 +1,13 @@
 Building configuration...
+[OK]
+ISP-POD3-R03#
+*Nov 30 21:28:14.219: %SYS-5-CONFIG_I: Configured from console by admin on console
+ISP-POD3-R03#
+ISP-POD3-R03#
+ISP-POD3-R03#show run
+Building configuration...
 
-Current configuration : 4875 bytes
+Current configuration : 4341 bytes
 !
 upgrade fpd auto
 version 12.4
@@ -8,7 +15,7 @@ service timestamps debug datetime msec
 service timestamps log datetime msec
 no service password-encryption
 !
-hostname ISP-POD2-R03
+hostname ISP-POD3-R03
 !
 boot-start-marker
 boot-end-marker
@@ -94,6 +101,10 @@ interface Loopback54
  description ***Network-54***
  ip address 192.168.177.54 255.255.255.255
 !
+interface Loopback55
+ description ***Network-55***
+ ip address 192.168.177.55 255.255.255.255
+!
 interface Loopback56
  description ***Network-56***
  ip address 192.168.177.56 255.255.255.255
@@ -101,10 +112,6 @@ interface Loopback56
 interface Loopback57
  description ***Network-57***
  ip address 192.168.177.57 255.255.255.255
-!
-interface Loopback155
- description ***Network-155***
- ip address 192.168.177.155 255.255.255.255
 !
 interface FastEthernet0/0
  description ***WAN_Uplink***
@@ -124,16 +131,22 @@ interface GigabitEthernet2/0
 interface Serial5/0
  description ***Network-50***
  ip address 192.168.50.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
  serial restart-delay 0
 !
 interface Serial5/1
  description ***Network-51***
  ip address 192.168.51.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
  serial restart-delay 0
 !
 interface Serial5/2
  description ***Network-52***
  ip address 192.168.52.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
  serial restart-delay 0
 !
 interface Serial5/3
@@ -146,54 +159,40 @@ interface Serial5/3
 interface Serial5/4
  description ***Network-54***
  ip address 192.168.54.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
  serial restart-delay 0
 !
 interface Serial5/5
  description ***Network-55***
- ip address 192.168.155.1 255.255.255.252
+ ip address 192.168.55.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
  serial restart-delay 0
 !
 interface Serial5/6
  description ***Network-56***
  ip address 192.168.56.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
  serial restart-delay 0
 !
 interface Serial5/7
  description ***Network-57***
  ip address 192.168.57.1 255.255.255.252
+ ip nat inside
+ ip virtual-reassembly
  serial restart-delay 0
 !
-router ospf 1
- log-adjacency-changes
- network 3.3.3.3 0.0.0.0 area 0
- network 192.168.50.0 0.0.0.3 area 0
- network 192.168.51.0 0.0.0.3 area 0
- network 192.168.52.0 0.0.0.3 area 0
- network 192.168.53.0 0.0.0.3 area 0
- network 192.168.54.0 0.0.0.3 area 0
- network 192.168.56.0 0.0.0.3 area 0
- network 192.168.57.0 0.0.0.3 area 0
- network 192.168.58.0 0.0.0.7 area 0
- network 192.168.155.0 0.0.0.3 area 0
- network 192.168.177.0 0.0.0.7 area 0
-!
-router bgp 100
+router bgp 300
  bgp log-neighbor-changes
- neighbor 192.168.177.1 remote-as 100
+ neighbor 192.168.177.1 remote-as 300
  neighbor 192.168.177.1 update-source FastEthernet0/0
  !
  address-family ipv4
   neighbor 192.168.177.1 activate
   no auto-summary
   no synchronization
-  network 192.168.50.0 mask 255.255.255.252
-  network 192.168.51.0 mask 255.255.255.252
-  network 192.168.52.0 mask 255.255.255.252
-  network 192.168.53.0 mask 255.255.255.252
-  network 192.168.54.0 mask 255.255.255.252
-  network 192.168.56.0 mask 255.255.255.252
-  network 192.168.57.0 mask 255.255.255.252
-  network 192.168.155.0 mask 255.255.255.252
  exit-address-family
 !
 ip forward-protocol nd
