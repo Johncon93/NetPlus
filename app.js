@@ -42,6 +42,34 @@ async function closeDatabase(){
     dbConnection = false;
 }
 
+// Route to pass data between server and client - Dynamic
+app.get("/otp/:host", async (req,res) => {
+
+    const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
+    const host = req.params.host;
+
+    let data = {}
+
+    // Check if TACACS+ server is down
+    if(parseOTP[0] == 'false'){// Server Down, retrieve and send backup data
+        data = {
+            link:`ssh://admin:admin@${host}`,
+            time: '30'
+        }
+    }
+    else{ // Server is Up, retrieve and send TACACs data
+        data = {
+            link: `ssh://johnc:${parseOTP[0]}@${host}`,
+            time: parseOTP[1]
+        }
+    }
+
+    const secret = process.env.SECRET_KEY
+
+    res.json(data) // Send otp info as JSON
+})
+
 // Route to pass data between server and client
 app.get("/otp", async (req,res) => {
 
@@ -149,12 +177,13 @@ app.get("/organisations/:orgId/:siteId", async (req, res) => {
     await connectToDatabase().catch(console.error)
 
     if(dbConnection){
+
         try{
             const parseOrg = req.params.orgId;
             const parseSite = req.params.siteId;
-        
+
             const netDb = await client.db('final_project').collection('networks').find({site_id: `${parseSite}`}).toArray();
-        
+
             res.render('networks.ejs', {orgId: parseOrg, siteId: parseSite})
         }
         catch(error){
@@ -165,10 +194,8 @@ app.get("/organisations/:orgId/:siteId", async (req, res) => {
     else{
         // Database connection not established
         res.send("Error! Database connection not initiated")
-
     }
 
-    await closeDatabase().catch(console.error)
 })
 
 // Get Sites listed to an Org and return as JSON - Used for displaying data in table
@@ -211,7 +238,7 @@ app.get('/sites/:orgId', async (req, res) => {
         res.send("Error! Database connection not initiated")
     }
     
-    await closeDatabase().catch(console.error)
+    //await closeDatabase().catch(console.error)
 })
 
 // Get Networks listed to a site and return as JSON - Used for displaying data in table
@@ -253,7 +280,7 @@ app.get('/networks/:orgId/:siteId', async (req, res) => {
         res.send("Error! Database connection not initiated")
     }
     
-    await closeDatabase().catch(console.error)
+    //await closeDatabase().catch(console.error)
 })
 
 // Test route to launch Python commands
@@ -288,7 +315,45 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
         res.send("Error! Database connection not initiated")
     }
     
-    await closeDatabase().catch(console.error)
+    //await closeDatabase().catch(console.error)
+})
+
+app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
+
+    await connectToDatabase().catch(console.error)
+
+    if(dbConnection){
+
+        try{
+            const parseOrg = req.params.orgId;
+            const parseSite = req.params.siteId;
+            const parseNet = req.params.netId;
+        
+            // Uses findOne as network_id should be unique
+            const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
+
+            res.render('device.ejs', {
+            orgId: parseOrg, 
+            siteId: parseSite, 
+            netId: parseNet, 
+            network_type: networkInfo.network_type,
+            alias_name: networkInfo.alias_name,
+            host: networkInfo.host,
+            protocol: networkInfo.protocol,
+            status: networkInfo.status,
+            device_type: networkInfo.device_type})
+        }
+        catch(error){
+            // Request has failed
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        // Database connection not established
+        res.send("Error! Database connection not initiated")
+    }
+    
+    //await closeDatabase().catch(console.error)
 })
 
 app.get('/alerts', async (req, res) =>{
@@ -327,6 +392,27 @@ app.get('/alerts', async (req, res) =>{
     }
     else{
         res.send('Error! Database connection not initiated.')
+    }
+
+})
+
+app.get('/uplinks/:host', async (req, res) =>{
+
+    try{
+        const host = req.params.host;
+
+        let uplinkHealth = python.UplinkHealth(host)
+        let timeStamp = new Date().toISOString()
+
+        const returnObj = {
+            [timeStamp]: uplinkHealth
+        }
+
+        res.json(returnObj)
+
+    }
+    catch(error){
+        res.send(`Request has failed, error message \n${error}`)
     }
 
 })

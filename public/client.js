@@ -1,28 +1,115 @@
 /* Client side JavaScript */
 
-// Update SSH Link with router information
-async function GenerateSSH(){
 
-    const link = document.getElementById('link-button');
-    link.innerHTML = 'Loading...'
+async function UplinkStatus(btn){
+
+    const uplink = document.getElementById(btn.id);
+
+    const uplinkStatus = document.getElementById('uplink-health');
+
+    let counter = 0
+
+    let dataStream = []
+    let dataTime = []
+
+    const uplinkChart = document.getElementById('uplink-chart').getContext('2d');
+
+    const chartData = {
+        labels: dataTime,
+        datasets: [{
+            data: dataStream,
+            fill: false,
+            borderColor: 'rgb(75, 192, 192)',
+            tension: 0.1
+        }]
+    }
+
+    const myChart = new Chart(uplinkChart, {
+        type: 'line',
+        data: chartData,
+        options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              },
+              x: {
+                beginAtZero: true,
+                display: false
+              }
+            },
+            plugins:{
+                legend: {
+                    display: false
+                }
+            }
+        }
+    })
+
+    const timeInterval = setInterval(async () => { // Run function in intervals of 5 sec
+        
+        if(counter < 100){
+            const response = await fetch(uplink.dataset.url)
+
+            const data = await response.json()
+        
+            const dataParse = JSON.stringify(data).split(':"')
+            dataParse[0] = dataParse[0].replace('{', '')
+            dataParse[1] = dataParse[1].replace('"', '').replace('}', '')
+        
+            //uplinkStatus.innerHTML += `Time: ${dataParse[0]} Status: ${dataParse[1]}\n`
+            counter += 1
+
+            switch(dataParse[1]){
+                case 'TO': dataStream.push(0)
+                break;
+                case 'CR': dataStream.push(0)
+                break;
+                case 'ERR': dataStream.push(0)
+                break;
+                default:
+                dataStream.push(parseFloat(dataParse[1]))
+                dataTime.push(dataParse[0])
+            }
+
+            if(counter > 10){
+
+                dataStream.shift()
+                dataTime.shift()
+            }
+            myChart.update()
+
+        }
+        else{
+            clearInterval(timeInterval) //Clear interval to prevent never-ending loop
+        }
+    }, 5000);
+
+}
+
+// Update SSH Link with router information
+async function GenerateSSH(btn){
+    
+    console.log(btn.id)
+    const link = document.getElementById(btn.id);
+    link.innerHTML = 'SSH Session Loading...'
     const response = await fetch(link.dataset.url)
     const data = await response.json()
     
     //ToDo add a log function that records every link generated, by who and at what time.
     link.href = data.link // Set href data to be the router SSH URL e.g. ssh://user:otp@routerip
 
-    LinkTimer(data.time) // Call interval function to set countdown timer until expiration
+    LinkTimer(data.time, btn.id) // Call interval function to set countdown timer until expiration
 }
 
-function LinkTimer(time){
+function LinkTimer(time, id){
 
-    const link = document.getElementById('link-button');
+    const link = document.getElementById(id);
 
     const timeInterval = setInterval(() => { // Run function in intervals of 1 sec
         
         if(time >= 0){ // Check if time expired
 
-            link.innerHTML = `Link expires in ${time.toString()}` //Update display text with remaining time
+            link.innerHTML = `SSH Session (TTL: ${time.toString()})` //Update display text with remaining time
             link.style.border = '2px'
             time -= 1
         }
@@ -50,9 +137,11 @@ function RedirectSite(orgId, siteId){
     window.location.href = `/organisations/${orgId}/${siteId}`
 
 }
+
+
 // Load device page for target network.
 function RedirectNetwork(orgId, siteId, netId){
-    alert(`Pending Implementation: OrgId: ${orgId} SiteId: ${siteId} NetId: ${netId}`)
+    window.location.href = `/device/${orgId}/${siteId}/${netId}`
 }
 
 function TrClick(tRow){
@@ -61,6 +150,8 @@ function TrClick(tRow){
 
     let table = "";
     let tableData = {};
+    let orgUri = ""
+    let siteUri = ""
 
     switch(parseId[0].toString()){
         case 'trOrg': // User has clicked on the Org Table
@@ -80,7 +171,7 @@ function TrClick(tRow){
         break;
         case 'trSite': // User has clicked on the Site Table
             table = document.querySelector(".site-refresh__table")
-            const orgUri = document.getElementById('orgUri')
+            orgUri = document.getElementById('orgUri')
 
             tableData = {
                 siteId: table.rows.item(parseId[1]).cells.item(0).innerHTML
@@ -89,6 +180,17 @@ function TrClick(tRow){
             RedirectSite(orgUri.innerHTML.toString().replace('/', ''), tableData.siteId)
 
         break;
+        case 'trNet':
+            siteUri = document.getElementById('siteUri').innerHTML.toString()
+            siteUri = siteUri.replace('/', '')
+            siteUri = siteUri.split('/')
+
+            table = document.querySelector('.network-refresh__table')
+            //console.log(`Network: ${table.rows.item(parseId[1]).cells.item(0).innerHTML}`)
+
+            //console.log(`Org: ${siteUri[0]}, Site: ${siteUri[1]}, Network: ${table.rows.item(parseId[1]).cells.item(0).innerHTML}`)
+            RedirectNetwork(siteUri[0], siteUri[1], table.rows.item(parseId[1]).cells.item(0).innerHTML)
+        
         default: // Default TR action 
             console.log(`Parse Alias: ${parseId[0]} Parse Id: ${parseId[1]}`)
     }

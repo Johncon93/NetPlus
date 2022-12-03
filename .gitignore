@@ -4,3 +4,4 @@ block_list.txt
 dnsTest.py
 .DS_Store
 exabgp-git/
+bgp-ping.py

@@ -40,3 +40,18 @@ exports.InitBGP = () => {
 
     return result;
 }
+
+exports.UplinkHealth = (host) => {
+
+    try{
+        const pyProcess = spawner("python3", ["uplink.py", host]);
+
+        let response = pyProcess.stdout;
+    
+        return response.toString();
+    }
+    catch(error){
+
+        return(error.toString())
+    }
+}
