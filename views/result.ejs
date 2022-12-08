@@ -22,16 +22,29 @@
           </header>
           <ul class="nav">
             <li>
-              <a href="/"><i class=" zmdi-view-dashboard"></i> Organisations</a>
+              <a href="/organisations"><i class="zmdi zmdi-link"></i>Organisations</a>
+              <form class="form-group">
+                <select class="custom-select" id="orgDropDownId" data-width="100%" disabled>
+                  <option selected><%=orgId%></option>
+                </select>
+              </form>
             </li>
             <li>
-              <a href="/organisations/<%=orgId%>"><i class="zmdi zmdi-link"></i> Sites</a> <!-- Should be disabled until Org Selected -->
+              <a href="/organisations/<%=orgId%>"><i class="zmdi zmdi-link"></i> Sites</a>
+              <form class="form-group">
+                <select class="custom-select" id="siteDropDownId" data-width="100%" disabled>
+                  <option selected><%=siteId%></option>
+                </select>
+              </form>
             </li>
             <li>
-                <a href="/organisations/<%=orgId%>/<%=siteId%>"><i class="zmdi zmdi-link"></i> Networks</a> <!-- Should be disabled until Site Selected -->
-            </li>
-            <li>
-              <a href="/organisations/<%=orgId%>/<%=siteId%>/<%=netId%>"><i class="zmdi zmdi-link"></i> Test GNS3</a> <!-- Temp button to test GNS3 integration -->
+              <a href="/organisations/<%=orgId%>/<%=siteId%>"><i class="zmdi zmdi-link"></i>Networks</a>
+              <form class="form-group">
+                <select class="custom-select" id="networkDropDownId" data-width="100%" disabled>
+                  <option selected><%=netId%></option>
+                </select>
+              </form>
+              <!--  <a href="/organisations/<%=orgId%>/<%=siteId%>"><i class="zmdi zmdi-link"></i> Networks</a> Should be disabled until Site Selected -->
             </li>
           </ul>
         </div>

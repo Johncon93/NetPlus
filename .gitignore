@@ -5,3 +5,5 @@ dnsTest.py
 .DS_Store
 exabgp-git/
 bgp-ping.py
+POST.py
+SYSLOG.py

@@ -22,7 +22,8 @@ let dbConnection = false;
 // Connect to Database
 async function connectToDatabase(){
     try{
-        await client.connect().then(dbConnection = true).finally(console.log(`Database connection has been established`))
+        await client.connect().then(dbConnection = true)
+        //await client.connect().then(dbConnection = true).finally(console.log(`Database connection has been established`))
     }
     catch(error){
         console.log(error)
@@ -301,9 +302,9 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
             const testCommand = 'show process cpu history'
 
             // Test function to prove GNS3 virtual devices accept commands
-            let testResult = python.CallDevice(testCommand, networkInfo.host).toString()
+            let cmdResult = python.CallDevice(testCommand, networkInfo.host).toString()
 
-            res.render('result.ejs', {command: testCommand, result: testResult, orgId: parseOrg, siteId: parseSite, netId: parseNet})
+            res.render('result.ejs', {command: testCommand, result: cmdResult, orgId: parseOrg, siteId: parseSite, netId: parseNet})
         }
         catch(error){
             // Request has failed
@@ -315,7 +316,6 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
         res.send("Error! Database connection not initiated")
     }
     
-    //await closeDatabase().catch(console.error)
 })
 
 app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
@@ -372,11 +372,11 @@ app.get('/alerts', async (req, res) =>{
 
                 for(let i = 0; i < alertInfo.length; i++){
 
-                    rowData.push([alertInfo[i]['time'], alertInfo[i]['network'], alertInfo[i]['priority']])
+                    rowData.push([alertInfo[i]['time'], alertInfo[i]['host'], alertInfo[i]['message']])
                 }
 
                 const data = {
-                    headers: ['Time', 'Network', 'Priority'],
+                    headers: ['Time', 'Host', 'Message'],
                     rows: rowData
                 }
                 res.json(data)
@@ -388,6 +388,36 @@ app.get('/alerts', async (req, res) =>{
         }
         catch(error){
             res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        res.send('Error! Database connection not initiated.')
+    }
+
+})
+
+app.post('/alerts', async (req, res) => {
+
+    await connectToDatabase().catch(console.error)
+
+    if(dbConnection){
+
+        try{
+
+            const host = req.body.host
+            const message = req.body.message
+
+            const obj = {
+                'time': new Date().toISOString(),
+                'host': host,
+                'message': message
+            }
+
+            const result = await client.db('final_project').collection('alerts').insertOne(obj)
+            console.log(result)
+        }
+        catch(error){
+            console.log(`Failed to post to database, error message \n ${error}`)
         }
     }
     else{
