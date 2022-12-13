@@ -46,7 +46,8 @@ async function closeDatabase(){
 // Route to pass data between server and client - Dynamic
 app.get("/otp/:host", async (req,res) => {
 
-    const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    //const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING2)
     const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
     const host = req.params.host;
 
@@ -56,7 +57,7 @@ app.get("/otp/:host", async (req,res) => {
     if(parseOTP[0] == 'false'){// Server Down, retrieve and send backup data
         data = {
             link:`ssh://admin:admin@${host}`,
-            time: '30'
+            time: '60'
         }
     }
     else{ // Server is Up, retrieve and send TACACs data
@@ -66,15 +67,17 @@ app.get("/otp/:host", async (req,res) => {
         }
     }
 
+    console.log(data)
+    
     const secret = process.env.SECRET_KEY
-
     res.json(data) // Send otp info as JSON
 })
 
 // Route to pass data between server and client
 app.get("/otp", async (req,res) => {
 
-    const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    //const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING2) // Call function to launch Python child process and retrieve OTP info
     const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
 
     let data = {}
@@ -95,6 +98,7 @@ app.get("/otp", async (req,res) => {
 
     const secret = process.env.SECRET_KEY
 
+    console.log(data)
     res.json(data) // Send otp info as JSON
 })
 
