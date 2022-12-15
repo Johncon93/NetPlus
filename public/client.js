@@ -82,7 +82,7 @@ async function UplinkStatus(btn){
         else{
             clearInterval(timeInterval) //Clear interval to prevent never-ending loop
         }
-    }, 5000);
+    }, 3000);
 
 }
 
