@@ -52,12 +52,12 @@
         <div id="content">
 
             <nav class="navbar">
-            <div class="container-fluid">
-                    <ul class="nav navbar-nav">
-                    <li><a href="/<%=orgId%>" id="orgUri">/<%=orgId%></a></li>
-                    </ul>
-                </div>
-            </div>
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                  <li class="breadcrumb-item"><a href="/">Home</a></li>
+                  <li class="breadcrumb-item active" aria-current="page"><a href="/<%=orgId%>" id="orgUri"><%=orgId%></a></li>
+                </ol>
+              </nav>
             </nav>
 
             <div class="container-fluid">

@@ -177,19 +177,18 @@ function TrClick(tRow){
                 siteId: table.rows.item(parseId[1]).cells.item(0).innerHTML
             }
 
-            RedirectSite(orgUri.innerHTML.toString().replace('/', ''), tableData.siteId)
+            RedirectSite(orgUri.innerHTML.toString(), tableData.siteId)
 
         break;
         case 'trNet':
+            orgUri = document.getElementById('orgUri').innerHTML.toString()
             siteUri = document.getElementById('siteUri').innerHTML.toString()
-            siteUri = siteUri.replace('/', '')
-            siteUri = siteUri.split('/')
 
             table = document.querySelector('.network-refresh__table')
             //console.log(`Network: ${table.rows.item(parseId[1]).cells.item(0).innerHTML}`)
 
             //console.log(`Org: ${siteUri[0]}, Site: ${siteUri[1]}, Network: ${table.rows.item(parseId[1]).cells.item(0).innerHTML}`)
-            RedirectNetwork(siteUri[0], siteUri[1], table.rows.item(parseId[1]).cells.item(0).innerHTML)
+            RedirectNetwork(orgUri, siteUri, table.rows.item(parseId[1]).cells.item(0).innerHTML)
         
         default: // Default TR action 
             console.log(`Parse Alias: ${parseId[0]} Parse Id: ${parseId[1]}`)
