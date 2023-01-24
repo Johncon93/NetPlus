@@ -402,12 +402,17 @@ app.get('/alerts', async (req, res) =>{
 
 app.post('/alerts', async (req, res) => {
 
+    console.log(req.body.host)
+    console.log(req.body.message)
+    
+    /*
     await connectToDatabase().catch(console.error)
 
     if(dbConnection){
 
         try{
-
+            console.log(req.body.host)
+            console.log(req.body.message)
             const host = req.body.host
             const message = req.body.message
 
@@ -419,6 +424,7 @@ app.post('/alerts', async (req, res) => {
 
             const result = await client.db('final_project').collection('alerts').insertOne(obj)
             console.log(result)
+
         }
         catch(error){
             console.log(`Failed to post to database, error message \n ${error}`)
@@ -427,7 +433,7 @@ app.post('/alerts', async (req, res) => {
     else{
         res.send('Error! Database connection not initiated.')
     }
-
+    */
 })
 
 app.get('/uplinks/:host', async (req, res) =>{
@@ -451,9 +457,17 @@ app.get('/uplinks/:host', async (req, res) =>{
 
 })
 
+function InitiateSYSLOG(){
+
+    let result = python.InitSYSLOG()
+
+    return result;
+}
+
 function InitiateBGP(){
 
     let result = python.InitBGP()
+
     return result;
 }
 
@@ -461,5 +475,8 @@ function InitiateBGP(){
 let bgpInit = InitiateBGP()
 console.log(`BGP Status: ${bgpInit[0]}\n${bgpInit[1]}`)
  
+//let sysInit = InitiateSYSLOG()
+//console.log(`SYSLOG Status: ${sysInit[0]}\n${sysInit[1]}`)
+
 // Listen on port 8443, currently using HTML ToDO: secure with https
 app.listen(8443, () => console.log("Server active"));
