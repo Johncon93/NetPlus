@@ -22,7 +22,7 @@ exports.CallOTP = (secret) => {
     return response.toString();
 
 }
-
+// Launch child process to iniitate SYSLOG Controller
 exports.InitSYSLOG = () => {
 
     let result = []
@@ -30,9 +30,6 @@ exports.InitSYSLOG = () => {
     try{
         const { exec } = require('node:child_process');
         exec('python3 ./controllers/SYSLOG-Controller.py');
-
-        //const pyProcess = spawner("python3", ["./controllers/SYSLOG-Controller.py"]);
-        //let response = pyProcess.stdout;
         result = [true, `SYSLOG: True`]
 
     }
@@ -43,8 +40,7 @@ exports.InitSYSLOG = () => {
     return result;
 }
 
-// Launch child process to iniitate BGP
-
+// Launch child process to iniitate BGP Controller
 exports.InitBGP = () => {
 
     let result = []

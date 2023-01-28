@@ -475,8 +475,8 @@ function InitiateBGP(){
 let bgpInit = InitiateBGP()
 console.log(`BGP Status: ${bgpInit[0]}\n${bgpInit[1]}`)
  
-//let sysInit = InitiateSYSLOG()
-//console.log(`SYSLOG Status: ${sysInit[0]}\n${sysInit[1]}`)
+let sysInit = InitiateSYSLOG()
+console.log(`SYSLOG Status: ${sysInit[0]}\n${sysInit[1]}`)
 
 // Listen on port 8443, currently using HTML ToDO: secure with https
 app.listen(8443, () => console.log("Server active"));
