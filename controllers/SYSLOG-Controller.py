@@ -1,9 +1,6 @@
-import socketserver
-import requests
+import socketserver, requests, datetime, os
 from pymongo import MongoClient
-import datetime
 from dotenv import load_dotenv
-import os
 
 load_dotenv()
 
@@ -11,7 +8,10 @@ HOST, PORT = "0.0.0.0", 514
 url = 'http://127.0.0.1:8443/alerts'
 
 def post(alert):
-	x = requests.post(url, data= alert)
+	try:
+		x = requests.post(url, data= alert)
+	except requests.exceptions.RequestException as error:
+		raise SystemExit(error)
 
 class SyslogUDPHandler(socketserver.BaseRequestHandler):
 
@@ -25,13 +25,18 @@ class SyslogUDPHandler(socketserver.BaseRequestHandler):
 			'host': f'{str(self.client_address[0])}',
 			'message': f'{data}' 
 		}
-		x = self.server.db.insert_one(obj)
-		print(x)
+
+		try:
+			x = self.server.db.insert_one(obj)
+			print(x)
+		except Exception as error:
+			print(f'Exception occured reference: {error}')
+			raise SystemExit(error)
 
 
 if __name__ == "__main__":
+	
 	try:
-
 		server = socketserver.UDPServer((HOST,PORT), SyslogUDPHandler)
 		client = MongoClient(os.getenv('MONGODB_PRIV_STRING'))
 		collection = client['final_project']
@@ -43,7 +48,8 @@ if __name__ == "__main__":
 		server.db = db
 
 		server.serve_forever()
-	except (IOError, SystemExit):
-		raise
+	except Exception as error:
+		print(f'Exception occured reference: {error}')
+		raise SystemExit(error)
 
 
