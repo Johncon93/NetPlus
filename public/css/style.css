@@ -201,6 +201,10 @@ margin-left: 20px;
   color: green;
 }
 
+#bad-icon {
+  color: red;
+}
+
 .btn-ssh {
   background-color: rgb(28, 119, 69) !important;
 }

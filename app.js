@@ -262,7 +262,16 @@ app.get('/networks/:orgId/:siteId', async (req, res) => {
                 let rowData = []
 
                 for(let i = 0; i < netDb.length; i++){
-                    rowData.push([netDb[i]['network_id'], netDb[i]['alias_name'], netDb[i]['host'], netDb[i]['network_type'], `<span id="ok-icon" class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
+
+                    let status = ''
+                    if(netDb[i]['status'] == true){ // Check if device was last seen alive or dead then adjust icon accordingly.
+                        status = `<span id="ok-icon" class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`
+                    }
+                    else{
+                        status = `<span id="bad-icon" class="material-symbols-outlined"><i class="material-icons":>cancel</i></span>`
+                    }
+
+                    rowData.push([netDb[i]['network_id'], netDb[i]['alias_name'], netDb[i]['host'], netDb[i]['network_type'], status])
                 }
 
                 const data = {
@@ -378,7 +387,7 @@ app.get('/alerts', async (req, res) =>{
 
                     rowData.push([alertInfo[i]['time'], alertInfo[i]['host'], alertInfo[i]['message']])
                 }
-
+                //rowData = rowData.reverse()
                 const data = {
                     headers: ['Time', 'Host', 'Message'],
                     rows: rowData

@@ -1,5 +1,7 @@
 /* Client side JavaScript */
-
+$(document).ready(function () {
+    //$('#example').DataTable();
+});
 
 async function UplinkStatus(btn){
 
@@ -199,6 +201,12 @@ function TdClick(tData){
 
 }
 
+function PagedDataTable(){
+
+    $(`.alert-refresh__table`).DataTable()
+    $('.dataTables_length').addClass('bs-select');
+}
+
 // onChange Function to update URI based on Organisation drop down selection
 function OrgChange(){
 
@@ -260,6 +268,7 @@ async function UpdateOrgTable(root){
     selectDropOrgId.addEventListener('change', OrgChange);
 
     root.querySelector(".org-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
+    $('#orgDT').DataTable();
 }
 
 // onChange Function to update URI based on Site drop down selection
@@ -324,6 +333,7 @@ async function UpdateSiteTable(root){
     selectDropSiteId.addEventListener('change', SiteChange);
 
     root.querySelector(".site-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
+    $('#siteDT').DataTable();
 }
 
 // onChange Function to update URI based on Network drop down selection
@@ -389,6 +399,7 @@ async function UpdateNetworkTable(root){
     selectDropNetworkId.addEventListener('change', NetworkChange);
 
     root.querySelector(".network-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
+    $('#networkDT').DataTable();
 }
 
 if(document.querySelectorAll(".org-refresh[data-url]").length > 0){
@@ -398,6 +409,7 @@ if(document.querySelectorAll(".org-refresh[data-url]").length > 0){
 
         // Create table element
         const table = document.createElement("table");
+        table.setAttribute('id', 'orgDT')
         table.classList.add("org-refresh__table");
         table.setAttribute("style", "table-layout:fixed;")
         table.innerHTML = `
@@ -451,7 +463,9 @@ if(document.querySelectorAll(".org-refresh[data-url]").length > 0){
         for(const header of data.headers){
             table.querySelector("thead tr").insertAdjacentHTML("beforeend", `<th>${header}</th>`);
         }
-    
+        console.log(`Type of Data: ${typeof(data)}`)
+        console.log(`Type of Data rows: ${typeof(data.rows)}`)
+
         // Populate table with rowData
         let i = 1;
         for(const row of data.rows){
@@ -468,7 +482,7 @@ if(document.querySelectorAll(".org-refresh[data-url]").length > 0){
         }
     
         root.querySelector(".alert-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
-
+        $('#alertDT').DataTable({order: [[0, 'desc']]});
     }
 
     // Create Alert Table and then call function to populate it
@@ -476,6 +490,7 @@ if(document.querySelectorAll(".org-refresh[data-url]").length > 0){
 
         // Create table element
         const table = document.createElement("table");
+        table.setAttribute('id', 'alertDT')
         table.classList.add("alert-refresh__table");
         table.setAttribute("style", "table-layout:fixed;")
         table.innerHTML = `
@@ -520,6 +535,7 @@ else if (document.querySelectorAll(".site-refresh[data-url]").length > 0){
 
         // Create table element
         const table = document.createElement("table");
+        table.setAttribute('id', 'siteDT')
         table.classList.add("site-refresh__table");
         table.setAttribute("style", "table-layout:fixed;")
         table.innerHTML = `
@@ -563,6 +579,7 @@ else if (document.querySelectorAll(".network-refresh[data-url]").length > 0){
 
             // Create table element
             const table = document.createElement("table");
+            table.setAttribute('id', 'networkDT')
             table.classList.add("network-refresh__table");
             table.setAttribute("style", "table-layout:fixed;")
             table.innerHTML = `
