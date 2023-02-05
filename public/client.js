@@ -97,8 +97,14 @@ async function GenerateSSH(btn){
     const response = await fetch(link.dataset.url)
     const data = await response.json()
     
+    if(!data.link.includes(':22')){ // Set href data to be the router SSH URL e.g. ssh://user:otp@routerip:{Port}
+        link.href = `${data.link}:2200`
+    }
+    else{
+        link.href = data.link
+    }
     //ToDo add a log function that records every link generated, by who and at what time.
-    link.href = data.link // Set href data to be the router SSH URL e.g. ssh://user:otp@routerip
+    //link.href = `ssh://admin:admin@192.168.177.3:2200`
 
     LinkTimer(data.time, btn.id) // Call interval function to set countdown timer until expiration
 }

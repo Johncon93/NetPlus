@@ -16,13 +16,33 @@ exports.CallDevice = (command, target) => {
 // Launch child process to get otp
 exports.CallOTP = (secret) => {
 
-    const pyProcess = spawner("python3", ["otp.py", secret]);
+    const pyProcess = spawner("python3", ['./controllers/OTP-Controller.py', secret]);
 
     let response = pyProcess.stdout;
 
     return response.toString();
 
 }
+
+// Launch child process to initiate Health Check Controller
+exports.InitHealthCheck = () => {
+
+    let result = []
+
+    try{
+
+        const { exec } = require('node:child_process');
+        exec('python3 ./controllers/HealthCheck-Controller.py');
+        result = [true, `SYSLOG: True`]
+
+    }
+    catch(error){
+        result = [false, error.toString()]
+    }
+
+    return result;
+}
+
 // Launch child process to iniitate SYSLOG Controller
 exports.InitSYSLOG = () => {
 
@@ -58,6 +78,7 @@ exports.InitBGP = () => {
     return result;
 }
 
+// Launch Uplink health session - sends polling ICMP packets to target host until cancelled.
 exports.UplinkHealth = (host) => {
 
     try{

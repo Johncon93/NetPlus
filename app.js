@@ -345,11 +345,24 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
             // Uses findOne as network_id should be unique
             const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
 
+            let deviceIcon = ''
+
+            if(networkInfo.network_type == 'WAN'){
+                deviceIcon = '/img/router.jpg'
+            }
+            else if(networkInfo.network_type == 'LAN') {
+                deviceIcon = '/img/layer-3-switch.jpg'
+            }
+            else{
+                deviceIcon = '/img/workgroup-switch.jpg'
+            }
+
             res.render('device.ejs', {
             orgId: parseOrg, 
             siteId: parseSite, 
             netId: parseNet, 
             network_type: networkInfo.network_type,
+            img: deviceIcon,
             alias_name: networkInfo.alias_name,
             host: networkInfo.host,
             protocol: networkInfo.protocol,
@@ -414,35 +427,6 @@ app.post('/alerts', async (req, res) => {
     console.log(req.body.host)
     console.log(req.body.message)
     
-    /*
-    await connectToDatabase().catch(console.error)
-
-    if(dbConnection){
-
-        try{
-            console.log(req.body.host)
-            console.log(req.body.message)
-            const host = req.body.host
-            const message = req.body.message
-
-            const obj = {
-                'time': new Date().toISOString(),
-                'host': host,
-                'message': message
-            }
-
-            const result = await client.db('final_project').collection('alerts').insertOne(obj)
-            console.log(result)
-
-        }
-        catch(error){
-            console.log(`Failed to post to database, error message \n ${error}`)
-        }
-    }
-    else{
-        res.send('Error! Database connection not initiated.')
-    }
-    */
 })
 
 app.get('/uplinks/:host', async (req, res) =>{
@@ -465,6 +449,19 @@ app.get('/uplinks/:host', async (req, res) =>{
     }
 
 })
+
+/*
+function InitiateHealthCheck(){
+
+    let result = python.InitSYSLOG()
+
+    return result;
+}
+*/
+
+function InitiateControllers(){
+
+}
 
 function InitiateSYSLOG(){
 
