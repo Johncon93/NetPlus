@@ -623,5 +623,12 @@ else if (document.querySelectorAll(".network-refresh[data-url]").length > 0){
         }
 }
 else{
-    console.log(`Table not found.`)
+    
+    const uplinkStatus = document.getElementById('deviceHealth')
+
+    if(uplinkStatus.innerHTML == 'check_circle'){
+        const uplinkBtn = document.getElementById('uplink-btn')
+        uplinkBtn.click()
+    }
+
 }

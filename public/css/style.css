@@ -189,6 +189,19 @@ margin-left: 20px;
     font-size: 1.2em;
 }
 
+.inline-icon {
+  vertical-align: bottom;
+  font-size: 18px !important;
+}
+
+.center-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 80px;
+  width: 80px;
+}
+
 #link-button {
   color: white !important;
   cursor: pointer;

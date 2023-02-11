@@ -357,6 +357,16 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
                 deviceIcon = '/img/workgroup-switch.jpg'
             }
 
+            let status = ''
+
+            if(networkInfo.status){
+
+                status = `check_circle`
+            }
+            else{
+                status = `cancel`
+            }
+
             res.render('device.ejs', {
             orgId: parseOrg, 
             siteId: parseSite, 
@@ -366,7 +376,7 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
             alias_name: networkInfo.alias_name,
             host: networkInfo.host,
             protocol: networkInfo.protocol,
-            status: networkInfo.status,
+            status: status,
             device_type: networkInfo.device_type})
         }
         catch(error){
