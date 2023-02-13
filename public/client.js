@@ -8,6 +8,7 @@ async function UplinkStatus(btn){
     const uplink = document.getElementById(btn.id);
 
     const uplinkStatus = document.getElementById('uplink-health');
+    const uplinkCheck = document.getElementById('deviceHealth');
 
     let counter = 0
 
@@ -48,7 +49,7 @@ async function UplinkStatus(btn){
     })
 
     const timeInterval = setInterval(async () => { // Run function in intervals of 5 sec
-        
+    
         if(counter < 100){
             const response = await fetch(uplink.dataset.url)
 
@@ -62,11 +63,17 @@ async function UplinkStatus(btn){
             counter += 1
 
             switch(dataParse[1]){
-                case 'TO': dataStream.push(0)
+                case 'TO': 
+                dataStream.push(parseFloat('0'))
+                dataTime.push(parseFloat('0'))
                 break;
-                case 'CR': dataStream.push(0)
+                case 'CR': 
+                dataStream.push(parseFloat('0'))
+                dataTime.push(parseFloat('0'))
                 break;
-                case 'ERR': dataStream.push(0)
+                case 'ERR': 
+                dataStream.push(parseFloat('0'))
+                dataTime.push(parseFloat('0'))
                 break;
                 default:
                 dataStream.push(parseFloat(dataParse[1]))
@@ -85,7 +92,6 @@ async function UplinkStatus(btn){
             clearInterval(timeInterval) //Clear interval to prevent never-ending loop
         }
     }, 3000);
-
 }
 
 // Update SSH Link with router information
@@ -627,8 +633,12 @@ else{
     const uplinkStatus = document.getElementById('deviceHealth')
 
     if(uplinkStatus.innerHTML == 'check_circle'){
-        const uplinkBtn = document.getElementById('uplink-btn')
-        uplinkBtn.click()
+        uplinkStatus.className += ' ok-icon'
     }
+    else {
+        uplinkStatus.className += ' bad-icon'
+    }
+    const uplinkBtn = document.getElementById('uplink-btn')
+    uplinkBtn.click()
 
 }

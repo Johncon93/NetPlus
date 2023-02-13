@@ -210,11 +210,13 @@ margin-left: 20px;
   text-align: center;
 }
 
-#ok-icon {
+#ok-icon,
+.ok-icon {
   color: green;
 }
 
-#bad-icon {
+#bad-icon,
+.bad-icon {
   color: red;
 }
 

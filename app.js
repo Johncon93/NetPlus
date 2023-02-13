@@ -344,6 +344,18 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
         
             // Uses findOne as network_id should be unique
             const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
+            const siteInfo = await client.db('final_project').collection('sites').findOne({site_id: `${parseSite}`});
+
+            let addrString = ''
+            let keyArray = Object.keys(siteInfo.site_address)
+
+            for(key in keyArray){
+                
+                let part = keyArray[key]
+                addrString += `${siteInfo.site_address[part]}, `
+
+            }
+            addrString = addrString.slice(0,-2)
 
             let deviceIcon = ''
 
@@ -368,6 +380,7 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
             }
 
             res.render('device.ejs', {
+            siteAddress: addrString,
             orgId: parseOrg, 
             siteId: parseSite, 
             netId: parseNet, 
