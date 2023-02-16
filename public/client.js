@@ -641,4 +641,90 @@ else{
     const uplinkBtn = document.getElementById('uplink-btn')
     uplinkBtn.click()
 
+    if (document.querySelectorAll(".alert-refresh[data-url]").length > 0){
+
+
+            // Code used to update alert table
+        async function UpdateAlertTable(root){
+
+            root.querySelector(".alert-refresh__button").classList.add("alert-refresh__button");
+        
+            // Retrieve JSON from /organisations url
+            const response = await fetch(root.dataset.url);
+            const data = await response.json()
+        
+            const table = root.querySelector(".alert-refresh__table");
+            table.querySelector("thead tr").innerHTML = "";
+            table.querySelector("tbody").innerHTML = "";
+        
+            // Populate table with headers
+            for(const header of data.headers){
+                table.querySelector("thead tr").insertAdjacentHTML("beforeend", `<th>${header}</th>`);
+            }
+            console.log(`Type of Data: ${typeof(data)}`)
+            console.log(`Type of Data rows: ${typeof(data.rows)}`)
+
+            // Populate table with rowData
+            let i = 1;
+            for(const row of data.rows){
+        
+                table.querySelector("tbody").insertAdjacentHTML("beforeend", `
+                    <div class="col-12">
+                        <tr onclick="TrClick(this);" id="trAlertId${i}">
+                            ${row.map(col => `<td onclick="TdClick(this);" value="tdAlertId${i}">${col}</td>`).join("")}
+                        </tr>
+                    </div>  
+                `);
+        
+                i += 1
+            }
+        
+            root.querySelector(".alert-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
+            $('#alertDT').DataTable({order: [[0, 'desc']]});
+        }
+
+        // Create Alert Table and then call function to populate it
+        for(const root of document.querySelectorAll(".alert-refresh[data-url]")){
+
+            // Create table element
+            const table = document.createElement("table");
+            table.setAttribute('id', 'alertDT')
+            table.classList.add("alert-refresh__table");
+            table.setAttribute("style", "table-layout:fixed;")
+            table.innerHTML = `
+            <div class="container-fluid">
+                <thead>
+                    <tr></tr>
+                </thead>
+                <tbody>
+                    <tr onclick="TrClick(this);">
+                        <td onclick="TdClick(this);">Loading</td>
+                    </tr>
+                </tbody>    
+            </div>        
+            `;
+            
+            // Create div element
+            const options = document.createElement("div");
+            options.classList.add("alert-refresh__options");
+            options.innerHTML = `
+                <span class="alert-refresh__label">Table last updated: never</span>
+                <button type="button" class="alert-refresh__button">
+                    <i class="material-icons":>refresh</i>
+                    </button>
+            `;
+
+            // Push div and table to original div
+            root.append(table, options)
+            
+            // Add OnClick function to button that refreshes Organisation list
+            options.querySelector(".alert-refresh__button").addEventListener("click", () => {
+                UpdateAlertTable(root)
+            })
+
+            UpdateAlertTable(root);
+        }
+
+    }
+
 }

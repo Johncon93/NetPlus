@@ -98,7 +98,7 @@ margin-left: 20px;
 .site-refresh__table tr:hover,
 .network-refresh__table tr:hover,
 .alert-refresh__table tr:hover{
-  background-color: #37474F !important;
+  background-color: #3A7D87 !important;
   opacity: 85%;
   color: white;
   cursor: pointer;
@@ -121,8 +121,10 @@ margin-left: 20px;
 .alert-refresh__table thead tr
  {
     background: #263238;
+    background-color:#2A5D65;
     color:white;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-align: center;
 }
 
 .org-refresh__table th,

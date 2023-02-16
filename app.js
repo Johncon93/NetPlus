@@ -445,6 +445,44 @@ app.get('/alerts', async (req, res) =>{
 
 })
 
+app.get('/alerts/:host', async (req, res) =>{
+
+    await connectToDatabase().catch(console.error)
+
+    const host = req.params.host
+    
+    if(dbConnection){
+
+        try{
+            const alertInfo = await client.db('final_project').collection('alerts').find().toArray();
+
+            let rowData = []
+
+            for(let i = 0; i < alertInfo.length; i++){
+
+                if(alertInfo[i]['host'].toString().includes(host.toString())){
+                    rowData.push([alertInfo[i]['time'], alertInfo[i]['host'], alertInfo[i]['message']])
+                }
+            }
+
+            const data = {
+                headers: ['Time', 'Host', 'Message'],
+                rows: rowData
+            }
+            res.json(data)
+
+        }
+        catch(error){
+    
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        res.send('Error! Database connection not initiated.')
+    }
+
+})
+
 app.post('/alerts', async (req, res) => {
 
     console.log(req.body.host)
