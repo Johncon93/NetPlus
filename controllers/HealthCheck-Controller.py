@@ -11,8 +11,9 @@ def ping_host(host):
 
     return response
 
-def update_stats(network):
+def update_stats(client, network, stats):
     print()
+
 
 # Currently sends 1x ICMP packet to each Network and then posts reusult to DB + updates Host status.
 # Should be expanded to send 1x ICMP packet every 5 seconds and then post that data to the DB.
@@ -85,6 +86,9 @@ def main():
 
         else:
             print('Network was previously dead and is still dead...')
+
+    time.sleep(60) # Basic sleep function.
+    main()
 
 
 if __name__ == "__main__":

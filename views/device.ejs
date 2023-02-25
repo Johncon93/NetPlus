@@ -55,7 +55,7 @@
               <nav class="navbar">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="/" onclick="stopICMP()">Home</a></li>
                     <li class="breadcrumb-item active"><a href="/<%=orgId%>" id="orgUri"><%=orgId%></a></li>
                     <li class="breadcrumb-item active"><a href="/<%=orgId%>/<%=siteId%>" id="siteUri"><%=siteId%></a></li>
                     <li class="breadcrumb-item active" aria-current="page"><a href="/<%=orgId%>/<%=siteId%>/<%=netId%>" id="netUri"><%=netId%></a></li>
@@ -104,7 +104,7 @@
                   <h4><small>Stored procedures</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
-                    <a href="#" class="btn btn-primary">Show running config</a>
+                    <a href="#" class="btn btn-primary">Show device config</a>
                     <a href="#" class="btn btn-primary">Show device health</a>
                     <a href="#" class="btn btn-primary">Show routing table</a>
                   </div>
@@ -119,11 +119,11 @@
                   <h4><small>Alerts</small></h4>
                   <hr>
                   <div class="alert-refresh" data-url = "/alerts/<%=host%>" id="tDisplay"></div>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                   <br><br>
 
-                  <h4><small>DNS</small></h4>
+                  <h4><small>Clients</small></h4>
                   <hr>
+                  <div class="client-refresh" data-url = "/clients/<%=host%>" id="tDisplay"></div>
                   <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
                   <hr>
 

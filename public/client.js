@@ -3,8 +3,17 @@ $(document).ready(function () {
     //$('#example').DataTable();
 });
 
+let active = false
+
+// Function to stop any active ICMP sessions when attempting to leave the page.
+function stopICMP(){
+
+    active = false
+}
+
 async function UplinkStatus(btn){
 
+    active = true
     const uplink = document.getElementById(btn.id);
 
     const uplinkStatus = document.getElementById('uplink-health');
@@ -50,7 +59,10 @@ async function UplinkStatus(btn){
 
     const timeInterval = setInterval(async () => { // Run function in intervals of 5 sec
     
-        if(counter < 100){
+        let healthIcon = document.getElementById('deviceHealth')
+
+        if(counter < 100 && active == true){
+
             const response = await fetch(uplink.dataset.url)
 
             const data = await response.json()
@@ -62,6 +74,21 @@ async function UplinkStatus(btn){
             //uplinkStatus.innerHTML += `Time: ${dataParse[0]} Status: ${dataParse[1]}\n`
             counter += 1
 
+            function UpdateIcon(icon, status){
+
+                if(icon.innerHTML == 'cancel' && status == 1){
+                    healthIcon.classList.remove('bad-icon')
+                    healthIcon.classList.add('ok-icon')
+                    healthIcon.innerHTML = 'check_circle'
+                }
+                else if(icon.innerHTML == 'check_circle' && status == 0){
+                    healthIcon.classList.remove('ok-icon')
+                    healthIcon.classList.add('bad-icon')
+                    healthIcon.innerHTML = 'cancel'
+                }                
+            }
+
+            let status = 0
             switch(dataParse[1]){
                 case 'TO': 
                 dataStream.push(parseFloat('0'))
@@ -76,10 +103,13 @@ async function UplinkStatus(btn){
                 dataTime.push(parseFloat('0'))
                 break;
                 default:
+                status = 1
                 dataStream.push(parseFloat(dataParse[1]))
                 dataTime.push(dataParse[0])
             }
 
+            UpdateIcon(healthIcon, status)
+            
             if(counter > 10){
 
                 dataStream.shift()

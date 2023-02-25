@@ -32,6 +32,8 @@ def main():
             if Health_Check(key):
                 core_router = core.get(key)
                 break
+        if core_router != '':
+            break
 
     core_spines = [
         {'192.168.177.11': '172.16.16.101'},
@@ -44,6 +46,8 @@ def main():
             if Health_Check(key):
                 core_spine = core.get(key)
                 break
+        if core_spine != '':
+            break
     
     bgp_peers = [
         {'192.168.177.3': [
