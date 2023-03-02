@@ -511,14 +511,14 @@ app.get('/uplinks/:host', async (req, res) =>{
 
 })
 
-/*
+
 function InitiateHealthCheck(){
 
-    let result = python.InitSYSLOG()
+    let result = python.InitHealth()
 
     return result;
 }
-*/
+
 
 function InitiateControllers(){
 
@@ -544,6 +544,9 @@ console.log(`BGP Status: ${bgpInit[0]}\n${bgpInit[1]}`)
  
 let sysInit = InitiateSYSLOG()
 console.log(`SYSLOG Status: ${sysInit[0]}\n${sysInit[1]}`)
+
+let healthInit = InitiateHealthCheck()
+console.log(`SYSLOG Status: ${healthInit[0]}\n${healthInit[1]}`)
 
 // Listen on port 8443, currently using HTML ToDO: secure with https
 app.listen(8443, () => console.log("Server active"));

@@ -25,7 +25,7 @@ exports.CallOTP = (secret) => {
 }
 
 // Launch child process to initiate Health Check Controller
-exports.InitHealthCheck = () => {
+exports.InitHealth = () => {
 
     let result = []
 
@@ -33,7 +33,7 @@ exports.InitHealthCheck = () => {
 
         const { exec } = require('node:child_process');
         exec('python3 ./controllers/HealthCheck-Controller.py');
-        result = [true, `SYSLOG: True`]
+        result = [true, `HEALTH: True`]
 
     }
     catch(error){

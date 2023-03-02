@@ -25,8 +25,8 @@ def main():
         {'192.168.177.4': '172.16.16.2'}
         ]
 
+# Iterate through the Core nodes until an alive one is found.
     core_router = ''
-
     for core in core_routers:
         for key in core:
             if Health_Check(key):
@@ -40,6 +40,7 @@ def main():
         {'192.168.177.12': '172.16.16.201'}
         ]
 
+    # Iterate through the spine nodes until an alive one is found.
     core_spine = ''
     for core in core_spines:
         for key in core:
@@ -49,6 +50,7 @@ def main():
         if core_spine != '':
             break
     
+    # Create updated AS for distribution
     bgp_peers = [
         {'192.168.177.3': [
             'announce route 192.168.30.0/30 next-hop 172.16.16.201',

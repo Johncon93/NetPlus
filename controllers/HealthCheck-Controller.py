@@ -71,7 +71,7 @@ def main():
         network_db.update_one({'_id': network['_id']}, { "$set": {'health': health_history}}, upsert=True) # Update network health key with the health_history data.
 
         # Parse result of ICMP packet and update network status accordingly.
-        if network['status'] == True and result != status:
+        if network['status'] == True and network['status'] != status:
             print('Network was previously alive and is now dead...')
             newvalues = { "$set": {'status': False}}
             network_db.update_one({'_id': network['_id']}, newvalues)
