@@ -297,6 +297,50 @@ app.get('/networks/:orgId/:siteId', async (req, res) => {
     //await closeDatabase().catch(console.error)
 })
 
+app.get("/device/:netId/:cmd", async (req, res) => {
+
+    await connectToDatabase().catch(console.error)
+
+    if(dbConnection){
+
+        try{
+            const parseNet = req.params.netId;
+            const parseCmd = req.params.cmd;
+        
+            // Uses findOne as network_id should be unique
+            const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
+
+            let cmdResult = ''
+
+            switch(parseCmd){
+
+                case 'runconfig':
+                    cmdResult = python.CallDevice('show run', networkInfo.host).toString()
+                    break
+                case 'iproute':
+                    cmdResult = python.CallDevice('show ip route', networkInfo.host).toString()
+                    break
+                case 'env':
+                    cmdResult = python.CallDevice('show enviro all', networkInfo.host).toString()
+                    break
+                default:
+                    cmdResult = ''
+            }
+
+            res.send(cmdResult)
+        }
+        catch(error){
+            // Request has failed
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        // Database connection not established
+        res.send("Error! Database connection not initiated")
+    }
+
+})
+
 // Test route to launch Python commands
 app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
   

@@ -14,7 +14,7 @@ def send_ssh(command, host):
     net_connect = ConnectHandler(**device)
 
     net_connect.enable()
-    output = net_connect.send_command_timing(command)
+    output = net_connect.send_command(command)
     print(f"\n{output}")
     net_connect.close()
     sys.stdout.flush()
