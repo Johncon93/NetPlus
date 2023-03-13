@@ -106,6 +106,31 @@ app.get("/otp", async (req,res) => {
  * Routes used for retrieving data from DB 
  */
 
+app.get("/history/:netId", async (req, res) => {
+
+    const netId = req.params.netId
+
+    if(dbConnection){
+
+        try{
+            const netDb = await client.db('final_project').collection('networks').findOne({network_id: `${netId}`})
+
+            res.json(netDb['health'])
+        }
+        catch(error){
+            // Request has failed
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        // Database connection not established
+        res.send("Error! Database connection not initiated")
+    }
+
+
+})
+
+
 // Get Organisations from Db and return as JSON - Used for displaying data in table
 app.get("/organisations", async (req, res) => {
 

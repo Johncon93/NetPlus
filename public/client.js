@@ -11,14 +11,94 @@ function stopICMP(){
     active = false
 }
 
+function historyGraph(timeWindow, history){
+
+    const ctx = document.getElementById('historyChart');
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: Array.apply(null, {length: timeWindow}).map(Number.call, Number),
+        datasets: [{
+          label: `${timeWindow} History`,
+          data: history
+        }]
+      }
+    });
+
+}
+
 async function UplinkHistory(btn){
 
     const uplink = document.getElementById(btn.id)
+    const collapseToggle = document.getElementById('collapseExample')
+
+    collapseToggle.classList.toggle('show')
 
     let timeWindow = uplink.id.split('y')
     timeWindow = timeWindow[1]
+    const response = await fetch(uplink.dataset.url)
 
-    console.log(timeWindow)
+    let historyData = await response.json()
+
+    let history = []
+    if(timeWindow <= 288){
+        for(var x = 0; x < timeWindow; x++){
+
+            if(parseFloat(historyData[0][x])){
+                history.push(historyData[0][x])
+            }
+            else(
+                history.push(0)
+            )
+        }
+    }
+    else{
+
+        historyData = []
+
+        for(var x = 0; x < 30; x++){
+
+            historyData.push([288])
+
+            for(var y = 0; y < historyData[x].length; y++){
+                historyData[x][y] = Array.apply(null, {length: 288}).map(Function.call, Math.random)
+            }
+        }
+
+        var z = 0;
+        Loop1:
+        for(var x = 0; x < historyData.length; x++){
+
+            //historyData[x] = Array.apply(null, {length: 288}).map(Function.call, Math.random)
+            Loop2:
+            for(var y = 0; y < historyData[x].length; y++){
+                Loop3:
+                for(var n = 0; n < historyData[x][y].length; n++){
+
+                    if(parseFloat(historyData[x][y][n])){
+                        history.push(historyData[x][y][n])
+                        z += 1
+                    }
+                    else{
+                        history.push(0)
+                        z += 1
+                    }
+                    if(z == timeWindow){
+                        console.log('Z has reached value: ' + z)
+                        x = historyData.length
+                        break Loop2
+                    }
+
+                }
+            }
+        }
+    }
+
+    console.log(history)
+
+    historyGraph(timeWindow, history)
+
 }
 
 async function UplinkStatus(btn){

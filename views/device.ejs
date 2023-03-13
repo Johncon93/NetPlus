@@ -97,10 +97,17 @@
                   <h4><small>Show history</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
-                    <a id="history12" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=host%>">1 Hour</a>
-                    <a id="history288" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=host%>">24 Hour</a>
-                    <a id="history8640" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=host%>">30 Day</a>
-                  </div> 
+                    <a id="history60" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">1 Hour</a>
+                    <a id="history1440" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">24 Hour</a>
+                    <a id="history8640" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">30 Day</a>
+                  </div>
+                  
+                  <div class="collapse" id="collapseExample">
+                    <div class="card card-body">
+                      <canvas id="historyChart"></canvas>
+                    </div>
+                  </div>
+
                   <h4><small>Stored procedures</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
