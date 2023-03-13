@@ -26,6 +26,7 @@ def main():
 
     for network in network_list:
 
+        result = ''
         if ':' in network['host']:
             temp_host = str(network['host']).split(':')
             # Network uses port forwards to access hardware, likely a switch and not internet routable.
@@ -36,7 +37,7 @@ def main():
             # Send ICMP packet to target host and parse result.
             status = ping_host(network['host'])
             if status == None:
-                status = 'Request timed out'
+                result = 'Request timed out'
             elif status == False:
                 result = 'Cannot resolve host'
             else:
@@ -70,16 +71,21 @@ def main():
 
         network_db.update_one({'_id': network['_id']}, { "$set": {'health': health_history}}, upsert=True) # Update network health key with the health_history data.
 
+        try:
+            parsed_result = type(float(result)) == type(0.123)
+        except:
+            parsed_result = False
+
         # Parse result of ICMP packet and update network status accordingly.
-        if network['status'] == True and network['status'] != status:
+        if network['status'] == True and parsed_result != True:
             print('Network was previously alive and is now dead...')
             newvalues = { "$set": {'status': False}}
             network_db.update_one({'_id': network['_id']}, newvalues)
 
-        elif network['status'] == True and result == status:
+        elif network['status'] == True and parsed_result:
             print('Network is alive and was alive previously...')
 
-        elif network['status'] != True and result == status:
+        elif network['status'] != True and parsed_result:
             print('Network was previously dead but is now alive...')
             newvalues = { "$set": {'status': True}}
             network_db.update_one({'_id': network['_id']}, newvalues)

@@ -11,10 +11,22 @@ function stopICMP(){
     active = false
 }
 
+async function UplinkHistory(btn){
+
+    const uplink = document.getElementById(btn.id)
+
+    let timeWindow = uplink.id.split('y')
+    timeWindow = timeWindow[1]
+
+    console.log(timeWindow)
+}
+
 async function UplinkStatus(btn){
 
     active = true
     const uplink = document.getElementById(btn.id);
+
+    print(uplink.data)
 
     const uplinkStatus = document.getElementById('uplink-health');
     const uplinkCheck = document.getElementById('deviceHealth');
@@ -61,7 +73,7 @@ async function UplinkStatus(btn){
     
         let healthIcon = document.getElementById('deviceHealth')
 
-        if(counter < 100 && active == true){
+        if(true && active == true){
 
             const response = await fetch(uplink.dataset.url)
 

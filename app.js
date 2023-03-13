@@ -116,19 +116,50 @@ app.get("/organisations", async (req, res) => {
         try{
 
             const orgDb = await client.db('final_project').collection('organisations').find({}).toArray()
-
-            console.log(orgDb)
+            const siteDb = await client.db('final_project').collection('sites').find().toArray()
+            const netDb = await client.db('final_project').collection('networks').find().toArray()
 
             try{
             
                 let rowData = []
 
                 for(let i = 0; i < orgDb.length; i++){
-                    rowData.push([orgDb[i]['org_id'], orgDb[i]['org_alias'], `<span id="ok-icon" class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
+
+                    let orgInfo = [0, 0]
+                    let siteInfo = [0, 0, 0]
+
+                    for(var y = 0; y < siteDb.length; y++){
+    
+                        if(siteDb[y]['org_id'] == orgDb[i]['org_id']){
+                            orgInfo[0] += 1
+
+                            for(var z = 0; z < netDb.length; z++){
+                                if(siteDb[y]['site_id'] == netDb[z]['site_id'] && netDb[z]['status']){
+                                    siteInfo[0] += 1
+                                }
+                                else if(siteDb[y]['site_id'] == netDb[z]['site_id'] && netDb[z]['status'] != true){
+                                    siteInfo[1] += 1
+                                }
+                            }
+                        }
+                    }
+
+                    /*
+                    if(orgInfo[0] != 1){
+                        orgInfo[1] = `${orgInfo[0]} x sites`
+                    }
+                    else{
+                        orgInfo[1] = `${orgInfo[0]} x site`
+                    }
+                    */
+
+                    siteInfo[2] = `${siteInfo[0]} x <i class="material-icons inline-icon ok-icon" id="deviceHealth">check_circle</i> ${siteInfo[1]} x <i class="material-icons inline-icon bad-icon" id="deviceHealth">cancel</i>`
+
+                    rowData.push([orgDb[i]['org_id'], orgDb[i]['org_alias'], `${orgInfo[0]}`, `${siteInfo[2]}`])
                 }
 
                 const data = {
-                    headers: ['Org Id', 'Org Alias', 'Status'],
+                    headers: ['Org Id', 'Org Alias', 'Number of sites', 'Network Status'],
                     rows: rowData
                 }
                 res.json(data)
@@ -213,18 +244,34 @@ app.get('/sites/:orgId', async (req, res) => {
 
             const parseData = req.params.orgId;
             const siteDb = await client.db('final_project').collection('sites').find({org_id: `${parseData}`}).toArray();
+            const netDb = await client.db('final_project').collection('networks').find().toArray()
 
             try{
             
                 let rowData = []
 
                 for(let i = 0; i < siteDb.length; i++){
+
+                    let siteInfo = [0,0,0]
+
                     let address = `${siteDb[i]['site_address']['street']}, ${siteDb[i]['site_address']['town']}, ${siteDb[i]['site_address']['post_code']}`
-                    rowData.push([siteDb[i]['site_id'], siteDb[i]['site_alias'], address, `<span id="ok-icon" class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`])
+        
+                    for(var z = 0; z < netDb.length; z++){
+                        if(siteDb[i]['site_id'] == netDb[z]['site_id'] && netDb[z]['status']){
+                            siteInfo[0] += 1
+                        }
+                        else if(siteDb[i]['site_id'] == netDb[z]['site_id'] && netDb[z]['status'] != true){
+                            siteInfo[1] += 1
+                        }
+                    }
+
+                    siteInfo[2] = `${siteInfo[0]} x <i class="material-icons inline-icon ok-icon" id="deviceHealth">check_circle</i> ${siteInfo[1]} x <i class="material-icons inline-icon bad-icon" id="deviceHealth">cancel</i>`
+
+                    rowData.push([siteDb[i]['site_id'], siteDb[i]['site_alias'], address, siteInfo[2]])
                 }
 
                 const data = {
-                    headers: ['Site Id', 'Site Alias', 'Location', 'Status'],
+                    headers: ['Site Id', 'Site Alias', 'Location', 'Network Status'],
                     rows: rowData
                 }
                 res.json(data)
