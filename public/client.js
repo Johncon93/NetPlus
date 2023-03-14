@@ -106,8 +106,6 @@ async function UplinkStatus(btn){
     active = true
     const uplink = document.getElementById(btn.id);
 
-    print(uplink.data)
-
     const uplinkStatus = document.getElementById('uplink-health');
     const uplinkCheck = document.getElementById('deviceHealth');
 
