@@ -111,10 +111,17 @@
                   <h4><small>Stored procedures</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
-                    <a href="/device/<%=netId%>/runconfig" class="btn btn-primary">Show device config</a>
-                    <a href="/device/<%=netId%>/env" class="btn btn-primary">Show device health</a>
-                    <a href="/device/<%=netId%>/iproute" class="btn btn-primary">Show routing table</a>
+                    <a class="btn btn-primary" id="getConfig" onclick="GetCMD(this)" data-url="/device/<%=netId%>/runconfig">Show device config</a>
+                    <a class="btn btn-primary" id="getEnv" onclick="GetCMD(this)" data-url="/device/<%=netId%>/env">Show device health</a>
+                    <a class="btn btn-primary" id="getRoute" onclick="GetCMD(this)" data-url="/device/<%=netId%>/iproute">Show routing table</a>
                   </div>
+
+                  <div class="collapse" id="collapseResult">
+                    <div class="card card-body">
+                      <textarea class="form-control" id="cmdDisplay" rows="20" cols="150" readonly></textarea>
+                    </div>
+                  </div>
+
                   <h4><small>Configure device</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">

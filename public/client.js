@@ -3,6 +3,29 @@ $(document).ready(function () {
     //$('#example').DataTable();
 });
 
+
+async function GetCMD(btn){
+
+    const commandBtn = document.getElementById(btn.id)
+    const collapseToggle = document.getElementById('collapseResult')
+    const textDisplay = document.getElementById('cmdDisplay')
+
+    textDisplay.innerHTML = 'Contacting device....'
+
+    if(!collapseToggle.classList.contains('show')){
+        collapseToggle.classList.add('show')
+    }
+
+    const response = await fetch(commandBtn.dataset.url)
+
+    let cmdResult = await response.json()
+
+    textDisplay.innerHTML = cmdResult.toString()
+
+}
+
+//log scale for the y axis
+
 let active = false
 
 // Function to stop any active ICMP sessions when attempting to leave the page.

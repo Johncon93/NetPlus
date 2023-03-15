@@ -7,8 +7,15 @@ const bodyParser = require('body-parser');
 const urlencodedParser = bodyParser.urlencoded({ extended: false }) // Will be used for POST requests to parse req bodies
 
 // Import Python.js script
-const python = require('./python.js');
+const components = require('./components.js');
 const { response } = require('express');
+
+// Import the Firebase modules
+//import firebase from 'firebase';
+
+const firebase_initializeApp = require("firebase/app")
+const firebase_auth = require("firebase/auth")
+const firebase_getAnalytics = require("firebase/analytics")
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}))
@@ -46,8 +53,8 @@ async function closeDatabase(){
 // Route to pass data between server and client - Dynamic
 app.get("/otp/:host", async (req,res) => {
 
-    //const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
-    const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING2)
+    //const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING2)
     const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
     const host = req.params.host;
 
@@ -76,8 +83,8 @@ app.get("/otp/:host", async (req,res) => {
 // Route to pass data between server and client
 app.get("/otp", async (req,res) => {
 
-    //const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
-    const otpData = python.CallOTP(process.env.TACACS_PRIV_STRING2) // Call function to launch Python child process and retrieve OTP info
+    //const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING2) // Call function to launch Python child process and retrieve OTP info
     const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
 
     let data = {}
@@ -387,19 +394,19 @@ app.get("/device/:netId/:cmd", async (req, res) => {
             switch(parseCmd){
 
                 case 'runconfig':
-                    cmdResult = python.CallDevice('show run', networkInfo.host).toString()
+                    cmdResult = components.CallDevice('show run', networkInfo.host).toString()
                     break
                 case 'iproute':
-                    cmdResult = python.CallDevice('show ip route', networkInfo.host).toString()
+                    cmdResult = components.CallDevice('show ip route', networkInfo.host).toString()
                     break
                 case 'env':
-                    cmdResult = python.CallDevice('show enviro all', networkInfo.host).toString()
+                    cmdResult = components.CallDevice('show enviro all', networkInfo.host).toString()
                     break
                 default:
                     cmdResult = ''
             }
 
-            res.send(cmdResult)
+            res.json(cmdResult)
         }
         catch(error){
             // Request has failed
@@ -431,7 +438,7 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
             const testCommand = 'show process cpu history'
 
             // Test function to prove GNS3 virtual devices accept commands
-            let cmdResult = python.CallDevice(testCommand, networkInfo.host).toString()
+            let cmdResult = components.CallDevice(testCommand, networkInfo.host).toString()
 
             res.render('result.ejs', {command: testCommand, result: cmdResult, orgId: parseOrg, siteId: parseSite, netId: parseNet})
         }
@@ -611,7 +618,7 @@ app.get('/uplinks/:host', async (req, res) =>{
     try{
         const host = req.params.host;
 
-        let uplinkHealth = python.UplinkHealth(host)
+        let uplinkHealth = components.UplinkHealth(host)
         let timeStamp = new Date().toISOString()
 
         const returnObj = {
@@ -627,10 +634,13 @@ app.get('/uplinks/:host', async (req, res) =>{
 
 })
 
+function login(email, password){
+    return null
+}
 
 function InitiateHealthCheck(){
 
-    let result = python.InitHealth()
+    let result = components.InitHealth()
 
     return result;
 }
@@ -642,16 +652,51 @@ function InitiateControllers(){
 
 function InitiateSYSLOG(){
 
-    let result = python.InitSYSLOG()
+    let result = components.InitSYSLOG()
 
     return result;
 }
 
 function InitiateBGP(){
 
-    let result = python.InitBGP()
+    let result = components.InitBGP()
 
     return result;
+}
+
+try{
+    const firebaseConfig = {
+
+        apiKey: process.env.API_KEY,
+        authDomain: process.env.AUTH_DOMAIN,
+        projectId: process.env.PROJECT_ID,
+        storageBucket: process.env.STORAGE_BUCKET,
+        messagingSenderId: process.env.MESSAGING_SENDER_ID,
+        appId: process.env.APP_ID,
+        measurementId: process.env.MEASUREMENT_ID
+    };
+
+        // Initialize Firebase
+        firebase_initializeApp.initializeApp(firebaseConfig);
+
+        // Test Credentials
+        let email = 'admin@netplus.co.uk'
+        let password = 'admin123'
+
+        // Test login code
+        const auth = firebase_auth.getAuth();
+        firebase_auth.signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in 
+                const user = userCredential.user;
+            })
+            .catch((error) => {
+                console.log(`Error ${error.code}/n${error.message}`)
+        });
+}
+catch(error){
+
+    console.log(`Error, failed to load firebase SDK.\n${error}`)
 }
 
 // Initiate BGP using AS 100 and advertise 2x test routes
