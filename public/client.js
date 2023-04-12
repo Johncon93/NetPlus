@@ -24,8 +24,6 @@ async function GetCMD(btn){
 
 }
 
-//log scale for the y axis
-
 let active = false
 
 // Function to stop any active ICMP sessions when attempting to leave the page.
@@ -36,6 +34,7 @@ function stopICMP(){
 
 function historyGraph(timeWindow, history){
 
+    // ToDo: log scale for the y axis
     const ctx = document.getElementById('historyChart');
 
     new Chart(ctx, {
@@ -342,9 +341,7 @@ function TrClick(tRow){
             siteUri = document.getElementById('siteUri').innerHTML.toString()
 
             table = document.querySelector('.network-refresh__table')
-            //console.log(`Network: ${table.rows.item(parseId[1]).cells.item(0).innerHTML}`)
 
-            //console.log(`Org: ${siteUri[0]}, Site: ${siteUri[1]}, Network: ${table.rows.item(parseId[1]).cells.item(0).innerHTML}`)
             RedirectNetwork(orgUri, siteUri, table.rows.item(parseId[1]).cells.item(0).innerHTML)
         
         default: // Default TR action 
@@ -781,8 +778,16 @@ else{
     else {
         uplinkStatus.className += ' bad-icon'
     }
-    const uplinkBtn = document.getElementById('uplink-btn')
-    uplinkBtn.click()
+
+    const deviceType = document.getElementById('device-type')
+
+    if(deviceType.dataset.url == 'WAN'){ // Check if device is WAN or LAN
+        const uplinkBtn = document.getElementById('uplink-btn')
+        uplinkBtn.click()
+    }
+    else{
+        const uplinkCard = document.getElementById('uplink-card').remove()
+    }
 
     if (document.querySelectorAll(".alert-refresh[data-url]").length > 0){
 

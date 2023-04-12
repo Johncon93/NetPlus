@@ -69,10 +69,10 @@
                   <div class="card border-dark text-center">
                     <h5 class="card-header"><%=alias_name%>   <i class="material-icons inline-icon" id="deviceHealth"><%=status%></i></h5>
                     <hr>
-                    <img class="card-img-top center-img" src="<%=img%>" alt="Card image cap">
+                    <img class="card-img-top center-img" id="device-type" data-url="<%=network_type%>" src="<%=img%>" alt="Card image cap">
                     <div class="card-body">
                       <h5 class="card-title"><%=host%></h5>
-                      <p class="card-text"><%=device_type%></p>
+                      <p class="card-text"></p>
                       <hr>
                       <p><%=siteAddress%></p>
                       <hr>
@@ -88,7 +88,7 @@
                   <h4><small>Uplink status</small></h4>
                   <hr>
                   <p id="uplink-health"></p>
-                  <div class="card">
+                  <div class="card" id="uplink-card">
                     <div class="card-body" style="position: relative; height:40vh; width:auto">
                       <canvas id="uplink-chart"></canvas>
                     </div>

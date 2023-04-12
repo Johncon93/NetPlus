@@ -481,39 +481,39 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
             addrString = addrString.slice(0,-2)
 
             let deviceIcon = ''
-
-            if(networkInfo.network_type == 'WAN'){
-                deviceIcon = '/img/router.jpg'
+            switch(networkInfo.network_type){
+                case 'WAN':
+                    if(networkInfo.alias_name.includes('SW')){
+                        deviceIcon = '/img/layer-3-switch.jpg'
+                    }
+                    else{
+                        deviceIcon = '/img/router.jpg'
+                    }
+                    break
+                case 'LAN':
+                    deviceIcon = '/img/workgroup-switch.jpg'
+                    break
             }
-            else if(networkInfo.network_type == 'LAN') {
-                deviceIcon = '/img/layer-3-switch.jpg'
-            }
-            else{
-                deviceIcon = '/img/workgroup-switch.jpg'
-            }
 
-            let status = ''
+            let status = 'check_circle'
+            if(!networkInfo.status){
 
-            if(networkInfo.status){
-
-                status = `check_circle`
-            }
-            else{
                 status = `cancel`
             }
 
             res.render('device.ejs', {
-            siteAddress: addrString,
-            orgId: parseOrg, 
-            siteId: parseSite, 
-            netId: parseNet, 
-            network_type: networkInfo.network_type,
-            img: deviceIcon,
-            alias_name: networkInfo.alias_name,
-            host: networkInfo.host,
-            protocol: networkInfo.protocol,
-            status: status,
-            device_type: networkInfo.device_type})
+                siteAddress: addrString,
+                orgId: parseOrg, 
+                siteId: parseSite, 
+                netId: parseNet, 
+                network_type: networkInfo.network_type,
+                img: deviceIcon,
+                alias_name: networkInfo.alias_name,
+                host: networkInfo.host,
+                protocol: networkInfo.protocol,
+                status: status,
+                device_type: networkInfo.device_type
+            })
         }
         catch(error){
             // Request has failed
