@@ -19,7 +19,7 @@ const firebase_getAnalytics = require("firebase/analytics")
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}))
-app.use(express.static('public')) // Allows use of static files with express, enabled css and client JS to function correctly
+app.use(express.static('public')) // Allows use of static files with express and enables css / client JS to function correctly
 app.set('view-engine', 'ejs')
 
 // Database initiation
@@ -709,5 +709,5 @@ console.log(`SYSLOG Status: ${sysInit[0]}\n${sysInit[1]}`)
 let healthInit = InitiateHealthCheck()
 console.log(`SYSLOG Status: ${healthInit[0]}\n${healthInit[1]}`)
 
-// Listen on port 8443, currently using HTML ToDO: secure with https
+// Listen on port 8443
 app.listen(8443, () => console.log("Server active"));

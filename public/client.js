@@ -45,6 +45,17 @@ function historyGraph(timeWindow, history){
           label: `${timeWindow} History`,
           data: history
         }]
+      },
+      options: {
+        scales:{
+            x:{
+                display: true,
+                type: 'logarithmic'
+            },
+            y:{
+                display: true
+            }
+        }
       }
     });
 

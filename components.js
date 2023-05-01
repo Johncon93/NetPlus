@@ -1,10 +1,9 @@
 const spawner = require('child_process').spawnSync;
 
-// Launch child process to send commands to a target device using ssh
+// Launch child process to send commands to a target device using ssh.
 exports.CallDevice = (command, target) => {
 
     const pyProcess = spawner("python3", ["./controllers/SSH-Controller.py", command, target]);
-    //const pyProcess = spawner("python3", ["python.py", command, target]);
 
     let response = pyProcess.stdout;
 
@@ -83,7 +82,6 @@ exports.UplinkHealth = (host) => {
 
     try{
         const pyProcess = spawner("python3", ["./controllers/ICMP-Controller.py", host]);
-        //const pyProcess = spawner("python3", ["uplink.py", host]);
         let response = pyProcess.stdout;
     
         return response.toString();
