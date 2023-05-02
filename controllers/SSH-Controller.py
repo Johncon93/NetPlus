@@ -1,4 +1,4 @@
-# Import Modules
+# Import NetMiko Module for establishing SSH connection, Sys for argument retrieval / buffer write.
 from netmiko import ConnectHandler
 import sys
 
@@ -38,3 +38,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+    
