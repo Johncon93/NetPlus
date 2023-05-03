@@ -3,23 +3,27 @@ $(document).ready(function () {
     //$('#example').DataTable();
 });
 
-
+// Function to retrieve SSH Commands from stored procedure interfaces
 async function GetCMD(btn){
 
+    // GET DOM objects for button, collapsing card, and result TextArea.
     const commandBtn = document.getElementById(btn.id)
     const collapseToggle = document.getElementById('collapseResult')
     const textDisplay = document.getElementById('cmdDisplay')
 
+    // Set button to show command in progress
     textDisplay.innerHTML = 'Contacting device....'
 
+    // Toggle collapsing card.
     if(!collapseToggle.classList.contains('show')){
         collapseToggle.classList.add('show')
     }
 
+    // Await result of sending command.
     const response = await fetch(commandBtn.dataset.url)
-
     let cmdResult = await response.json()
 
+    // Display response as string in result TextArea.
     textDisplay.innerHTML = cmdResult.toString()
 
 }
@@ -250,44 +254,51 @@ async function UplinkStatus(btn){
 // Update SSH Link with router information
 async function GenerateSSH(btn){
     
-    console.log(btn.id)
+    // Get button as a DOM object and set inner HTML to reflect loading stage.
     const link = document.getElementById(btn.id);
     link.innerHTML = 'SSH Session Loading...'
+
+    // Retrieve URL from DOM object and submit GET Request to server
     const response = await fetch(link.dataset.url)
     const data = await response.json()
     
-    if(!data.link.includes(':22')){ // Set href data to be the router SSH URL e.g. ssh://user:otp@routerip:{Port}
+    // Set button href to be the router SSH URL e.g. ssh://user:otp@routerip:{Port}
+    if(!data.link.includes(':22')){ // If no port defined, set 2200.
         link.href = `${data.link}:2200`
     }
     else{
         link.href = data.link
     }
-    //ToDo add a log function that records every link generated, by who and at what time.
-    //link.href = `ssh://admin:admin@192.168.177.3:2200`
 
-    LinkTimer(data.time, btn.id) // Call interval function to set countdown timer until expiration
+    // Call interval function to set countdown timer until expiration
+    LinkTimer(data.time, btn.id)
 }
 
+// Timed function that runs until OTP expires.
 function LinkTimer(time, id){
 
+    // Get button as an oject.
     const link = document.getElementById(id);
 
-    const timeInterval = setInterval(() => { // Run function in intervals of 1 sec
+    // Run function in intervals of 1 sec
+    const timeInterval = setInterval(() => {
         
         if(time >= 0){ // Check if time expired
 
-            link.innerHTML = `SSH Session (TTL: ${time.toString()})` //Update display text with remaining time
+            //Update display text with remaining time
+            link.innerHTML = `SSH Session (TTL: ${time.toString()})`
             link.style.border = '2px'
             time -= 1
         }
         else{
-            // Time has expired, remove elements to invalidate link
+            // Time has expired, remove elements to invalidate button link.
             link.innerHTML = 'Link Expired'
             link.removeAttribute('onclick')
             link.removeAttribute('href')
             link.removeAttribute('data-url')
-            // Add onClick function here which logs if the button has been clicked, by who and what time.
-            clearInterval(timeInterval) //Clear interval to prevent never-ending loop
+
+            //Clear interval to prevent never-ending loop
+            clearInterval(timeInterval)
         }
     }, 1000);
 

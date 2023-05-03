@@ -108,6 +108,7 @@
                     </div>
                   </div>
 
+                  <!-- Stored procedure interfaces for executing commands via SSH -->
                   <h4><small>Stored procedures</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
@@ -115,7 +116,7 @@
                     <a class="btn btn-primary" id="getEnv" onclick="GetCMD(this)" data-url="/device/<%=netId%>/env">Show device health</a>
                     <a class="btn btn-primary" id="getRoute" onclick="GetCMD(this)" data-url="/device/<%=netId%>/iproute">Show routing table</a>
                   </div>
-
+                  <!-- Collapsing card with TextArea for displaying result of SSH commands -->
                   <div class="collapse" id="collapseResult">
                     <div class="card card-body">
                       <textarea class="form-control" id="cmdDisplay" rows="20" cols="150" readonly></textarea>

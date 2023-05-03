@@ -66,6 +66,7 @@ exports.InitBGP = () => {
     let result = []
 
     try{
+        // Run Exabgp Python application to translate JSON into BGP messages.
         const { exec } = require('node:child_process');
         exec('"./exabgp-git/sbin/exabgp" ./exabgp-git/sbin/conf.ini');
         result = [true, "BGP Initiated"]

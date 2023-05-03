@@ -1,7 +1,4 @@
-import secrets
-import pyotp
-import sys
-import datetime
+import pyotp, sys, datetime
 from ping3 import ping
 
 secret = sys.argv[1]

@@ -50,18 +50,22 @@ async function closeDatabase(){
     dbConnection = false;
 }
 
-// Route to pass data between server and client - Dynamic
+// Route to pass data between server and client
 app.get("/otp/:host", async (req,res) => {
 
-    //const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
+    // Call function to launch Python child process and retrieve OTP info
     const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING2)
-    const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
+
+     //Split response so that [0] = otp and [1] = time remaining on otp
+    const parseOTP = otpData.split('@');
+
+    // Retrieve passed IP address.
     const host = req.params.host;
 
     let data = {}
 
     // Check if TACACS+ server is down
-    if(parseOTP[0] == 'false'){// Server Down, retrieve and send backup data
+    if(parseOTP[0] == 'false'){// Server Down, send backup login details.
         data = {
             link:`ssh://admin:admin@${host}`,
             time: '60'
@@ -74,9 +78,6 @@ app.get("/otp/:host", async (req,res) => {
         }
     }
 
-    console.log(data)
-    
-    const secret = process.env.SECRET_KEY
     res.json(data) // Send otp info as JSON
 })
 
