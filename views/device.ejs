@@ -94,7 +94,7 @@
                     </div>
                   </div>
                   <br><br>
-                  <h4><small>Show history</small></h4>
+                  <h4><small>Uplink history</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
                     <a id="history60" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">1 Hour</a>
@@ -111,11 +111,20 @@
                   <!-- Stored procedure interfaces for executing commands via SSH -->
                   <h4><small>Stored procedures</small></h4>
                   <hr>
+
                   <div class="btn-group btn-group-justified">
                     <a class="btn btn-primary" id="getConfig" onclick="GetCMD(this)" data-url="/device/<%=netId%>/runconfig">Show device config</a>
                     <a class="btn btn-primary" id="getEnv" onclick="GetCMD(this)" data-url="/device/<%=netId%>/env">Show device health</a>
                     <a class="btn btn-primary" id="getRoute" onclick="GetCMD(this)" data-url="/device/<%=netId%>/iproute">Show routing table</a>
-                  </div>
+                    <a class="btn btn-primary" id="getVlan" onclick="GetCMD(this)" data-url="/device/<%=netId%>/vlan">Show Virtual SVIs</a>
+                  </div> 
+                  <br>
+                  <div class="btn-group btn-group-justified">
+                    <a class="btn btn-primary" id="getPyhsical" onclick="GetCMD(this)" data-url="/device/<%=netId%>/physical">Show Physical interfaces</a>
+                    <a class="btn btn-primary" id="getNat" onclick="GetCMD(this)" data-url="/device/<%=netId%>/">Show NAT rules</a>
+                    <a class="btn btn-primary" id="getHistory" onclick="GetCMD(this)" data-url="/device/<%=netId%>/">Show command history</a>
+                    <a class="btn btn-primary" id="getBgp" onclick="GetCMD(this)" data-url="/device/<%=netId%>/">Show BGP</a>
+                  </div> 
                   <!-- Collapsing card with TextArea for displaying result of SSH commands -->
                   <div class="collapse" id="collapseResult">
                     <div class="card card-body">
@@ -126,22 +135,23 @@
                   <h4><small>Configure device</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
-                    <a href="#" class="btn btn-primary">Configure VLAN</a>
-                    <a href="#" class="btn btn-primary">Configure NAT rules</a>
-                    <a href="#" class="btn btn-primary">Configure DNS</a>
-                  </div> 
+                    <a class="btn btn-primary" id="postVlan" onclick="PostCMD(this)">Configure SVI</a>
+                    <a class="btn btn-primary" id="postNat" onclick="PostCMD(this)">Configure NAT</a>
+                    <a class="btn btn-primary" id="postDhcp" onclick="PostCMD(this)">Configure DHCP</a>
+                    <a class="btn btn-primary" id="postRoute" onclick="PostCMD(this)">Configure Route</a>
+                  </div>
+                  
+                  <div class="collapse" id="collapseConf">
+                    <div class="card card-body">
+                      <textarea class="form-control" id="confDisplay" rows="20" cols="150" readonly></textarea>
+                    </div>
+                  </div>
+                  
                   <hr>
                   <h4><small>Alerts</small></h4>
                   <hr>
                   <div class="alert-refresh" data-url = "/alerts/<%=host%>" id="tDisplay"></div>
                   <br><br>
-
-                  <h4><small>Clients</small></h4>
-                  <hr>
-                  <div class="client-refresh" data-url = "/clients/<%=host%>" id="tDisplay"></div>
-                  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                  <hr>
-
                 </div>
 
               </div>

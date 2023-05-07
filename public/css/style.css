@@ -1,14 +1,16 @@
-/* CSS */
-
+/* IMPORTED CSS */
 @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,400i,500');
 
+/*
+  -----------------------------------
+  BASE VIEW CSS
+  -----------------------------------
+*/
 body {
   overflow-x: hidden;
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
 }
-
-/* Toggle Styles */
 
 #viewport {
   padding-left: 250px;
@@ -24,7 +26,11 @@ body {
   margin-right: 0;
 }
 
-/* Sidebar Styles */
+/*
+  -----------------------------------
+  SIDEBAR CSS
+  -----------------------------------
+*/
 
 #sidebar {
   z-index: 1000;
@@ -82,8 +88,11 @@ body {
 margin-left: 20px;
 }
 
-/* Org Table CSS */
-
+/*
+  -----------------------------------
+  DYNAMIC TABLE CSS
+  -----------------------------------
+*/
 .org-refresh,
 .site-refresh,
 .network-refresh,
@@ -149,7 +158,11 @@ margin-left: 20px;
     background: #eeeeee;
 }
 
-/* Org Table Options CSS */
+/*
+  -----------------------------------
+  DYNAMIC TABLE OPTIONS CSS
+  -----------------------------------
+*/
 
 .org-refresh__options,
 .site-refresh__options,
@@ -204,14 +217,6 @@ margin-left: 20px;
   width: 80px;
 }
 
-#link-button {
-  color: white !important;
-  cursor: pointer;
-  padding: 16px 24px;
-  margin-right: 16px;
-  text-align: center;
-}
-
 #ok-icon,
 .ok-icon {
   color: green;
@@ -220,6 +225,22 @@ margin-left: 20px;
 #bad-icon,
 .bad-icon {
   color: red;
+}
+
+/*
+  -----------------------------------
+  BUTTON CSS
+  -----------------------------------
+*/
+#link-button {
+  color: white !important;
+  cursor: pointer;
+  padding: 16px 24px;
+  margin-right: 16px;
+  text-align: center;
+}
+.btn-primary{
+  padding-bottom: 5px;
 }
 
 .btn-ssh {
@@ -233,4 +254,8 @@ margin-left: 20px;
 .custom-select{
   width: 200px;
   align-content: center;
+}
+
+.btn-toolbar{
+  text-align: center;
 }

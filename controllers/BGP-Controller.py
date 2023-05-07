@@ -2,7 +2,7 @@ from sys import stdout
 from time import sleep
 from ping3 import ping
 
-
+# Basic ICMP health check to determine if host is up.
 def Health_Check(host):
 
     try:
@@ -19,7 +19,7 @@ def Health_Check(host):
 
 def main():
 
-
+    # Define core ISP infrastructure.
     core_routers = [
         {'192.168.177.3': '172.16.16.1'},
         {'192.168.177.4': '172.16.16.2'}
@@ -40,7 +40,7 @@ def main():
         {'192.168.177.12': '172.16.16.201'}
         ]
 
-    # Iterate through the spine nodes until an alive one is found.
+    # Iterate through the spine nodes until an alive host is found.
     core_spine = ''
     for core in core_spines:
         for key in core:
@@ -50,7 +50,7 @@ def main():
         if core_spine != '':
             break
     
-    # Create updated AS for distribution
+    # Define routes for distribution, uses dict but key does not matter.
     bgp_peers = [
         {'192.168.177.3': [
             'announce route 192.168.30.0/30 next-hop 172.16.16.201',
@@ -79,12 +79,13 @@ def main():
                     route = route.replace('announce', 'withdraw')
                     messages.append(route)
                         
-    #Iterate through messages
+    #Iterate through messages, write to buffer and then flush.
     for message in messages:
         stdout.write(message + '\n')
         stdout.flush()
         sleep(1)
 
+    # Sleep for 20 seconds and then re-run script.
     sleep(20)
     main()
 

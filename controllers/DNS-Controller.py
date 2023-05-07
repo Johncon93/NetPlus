@@ -1,5 +1,12 @@
 import socketserver
 
+"""
+
+UDP listener for DNS requests.
+Feature was scrapped due to performance limitations observed in test environment.
+
+"""
+
 HOST, PORT = '0.0.0.0', 53
 
 class DNSHandler(socketserver.BaseRequestHandler):

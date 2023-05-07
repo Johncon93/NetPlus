@@ -1,8 +1,3 @@
-/* Client side JavaScript */
-$(document).ready(function () {
-    //$('#example').DataTable();
-});
-
 // Function to retrieve SSH Commands from stored procedure interfaces
 async function GetCMD(btn){
 
@@ -28,13 +23,26 @@ async function GetCMD(btn){
 
 }
 
-let active = false
+async function PostCMD(btn){
+
+    const commandBtn = document.getElementById(btn.id)
+    const collapseToggle = document.getElementById('collapseConf')
+    const textDisplay = document.getElementById('confDisplay')
+
+}
 
 // Function to stop any active ICMP sessions when attempting to leave the page.
+let active = false
 function stopICMP(){
 
     active = false
 }
+
+/*
+    -----------------------------------
+    CODE FOR HISTORIC TRAFFIC DATA GRAPH
+    -----------------------------------
+*/
 
 function historyGraph(timeWindow, history){
 
@@ -138,6 +146,11 @@ async function UplinkHistory(btn){
 
 }
 
+/*
+    -----------------------------------
+    CODE FOR LIVE TRAFFIC GRAPH
+    -----------------------------------
+*/
 async function UplinkStatus(btn){
 
     active = true
@@ -251,6 +264,11 @@ async function UplinkStatus(btn){
     }, 3000);
 }
 
+/*
+    -----------------------------------
+    CODE FOR GENERATING SSH LINKS
+    -----------------------------------
+*/
 // Update SSH Link with router information
 async function GenerateSSH(btn){
     
@@ -304,6 +322,11 @@ function LinkTimer(time, id){
 
 }
 
+/*
+    -----------------------------------
+    CODE FOR WINDOW RE-LOCATION AFTER TABLE INTERACTION
+    -----------------------------------
+*/
 // Function to navigate to the /organisations/:orgId URL
 function RedirectOrg(orgId){
 
@@ -316,11 +339,15 @@ function RedirectSite(orgId, siteId){
 
 }
 
-
-// Load device page for target network.
 function RedirectNetwork(orgId, siteId, netId){
     window.location.href = `/device/${orgId}/${siteId}/${netId}`
 }
+
+/*
+    -----------------------------------
+    CODE FOR TABLE INTERACTION
+    -----------------------------------
+*/
 
 function TrClick(tRow){
 
@@ -371,16 +398,24 @@ function TrClick(tRow){
     }
 }
 
+// Record interaction with table data.
 function TdClick(tData){
-
+    console.log(tData)
 }
 
+/*
 function PagedDataTable(){
 
     $(`.alert-refresh__table`).DataTable()
     $('.dataTables_length').addClass('bs-select');
 }
+*/
 
+/*
+    -----------------------------------
+    CODE FOR ORGANISATION TABLE
+    -----------------------------------
+*/
 // onChange Function to update URI based on Organisation drop down selection
 function OrgChange(){
 
@@ -445,6 +480,11 @@ async function UpdateOrgTable(root){
     $('#orgDT').DataTable();
 }
 
+/*
+    -----------------------------------
+    CODE FOR SITE TABLE
+    -----------------------------------
+*/
 // onChange Function to update URI based on Site drop down selection
 function SiteChange(){
 
@@ -510,6 +550,11 @@ async function UpdateSiteTable(root){
     $('#siteDT').DataTable();
 }
 
+/*
+    -----------------------------------
+    CODE FOR NETWORK TABLE
+    -----------------------------------
+*/
 // onChange Function to update URI based on Network drop down selection
 function NetworkChange(){
 
@@ -575,6 +620,12 @@ async function UpdateNetworkTable(root){
     root.querySelector(".network-refresh__label").textContent = `Table last updated: ${new Date().toLocaleString()}`;
     $('#networkDT').DataTable();
 }
+
+/*
+    -----------------------------------
+    CODE TO CHECK CURRENT VIEW AND UPDATE AVAILABLE TABLES
+    -----------------------------------
+*/
 
 if(document.querySelectorAll(".org-refresh[data-url]").length > 0){
 

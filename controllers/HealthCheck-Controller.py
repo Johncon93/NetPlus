@@ -3,24 +3,20 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 from ping3 import ping
 
+# Load environment variables.
 load_dotenv()
 
+# Basic ICMP health check to determine uptime.
 def ping_host(host):
 
     response = ping(host)
 
     return response
 
-def update_stats(client, network, stats):
-    print()
-
-
-# Currently sends 1x ICMP packet to each Network and then posts reusult to DB + updates Host status.
-# Should be expanded to send 1x ICMP packet every 5 seconds and then post that data to the DB.
 def main():
 
+    # Connect to database and retireve list of networks.
     client = MongoClient(os.getenv('MONGODB_PRIV_STRING'))
-    
     network_db = client['final_project']['networks']
     network_list = network_db.find()
 

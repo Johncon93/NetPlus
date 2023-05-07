@@ -11,18 +11,21 @@ const components = require('./components.js');
 const { response } = require('express');
 
 // Import the Firebase modules
-//import firebase from 'firebase';
-
 const firebase_initializeApp = require("firebase/app")
 const firebase_auth = require("firebase/auth")
-const firebase_getAnalytics = require("firebase/analytics")
 
 const app = express();
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(express.static('public')) // Allows use of static files with express and enables css / client JS to function correctly
 app.set('view-engine', 'ejs')
 
-// Database initiation
+
+/*
+    -----------------------------------
+    DATABASE CONNECTION CONFIG
+    -----------------------------------
+*/
+
 const client = new MongoClient(process.env.MONGODB_PRIV_STRING);
 let dbConnection = false;
 
@@ -30,96 +33,43 @@ let dbConnection = false;
 async function connectToDatabase(){
     try{
         await client.connect().then(dbConnection = true)
-        //await client.connect().then(dbConnection = true).finally(console.log(`Database connection has been established`))
     }
     catch(error){
         console.log(error)
     } 
 }
 
-// Close database
-async function closeDatabase(){
+/*
+    -----------------------------------
+    UPLINK ROUTES
+    -----------------------------------
+*/
+
+app.get('/uplinks/:host', async (req, res) =>{
 
     try{
-        await client.close().then(console.log(`Database connection has been closed.`))
+        const host = req.params.host;
+
+        let uplinkHealth = components.UplinkHealth(host)
+        let timeStamp = new Date().toISOString()
+
+        const returnObj = {
+            [timeStamp]: uplinkHealth
+        }
+
+        res.json(returnObj)
     }
     catch(error){
-        console.log(error)
+        res.send(`Request has failed, error message \n${error}`)
     }
-
-    dbConnection = false;
-}
-
-// Route to pass data between server and client
-app.get("/otp/:host", async (req,res) => {
-
-    // Call function to launch Python child process and retrieve OTP info
-    const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING2)
-
-     //Split response so that [0] = otp and [1] = time remaining on otp
-    const parseOTP = otpData.split('@');
-
-    // Retrieve passed IP address.
-    const host = req.params.host;
-
-    let data = {}
-
-    // Check if TACACS+ server is down
-    if(parseOTP[0] == 'false'){// Server Down, send backup login details.
-        data = {
-            link:`ssh://admin:admin@${host}`,
-            time: '60'
-        }
-    }
-    else{ // Server is Up, retrieve and send TACACs data
-        data = {
-            link: `ssh://johnc:${parseOTP[0]}@${host}`,
-            time: parseOTP[1]
-        }
-    }
-
-    res.json(data) // Send otp info as JSON
 })
-
-// Route to pass data between server and client
-app.get("/otp", async (req,res) => {
-
-    //const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING) // Call function to launch Python child process and retrieve OTP info
-    const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING2) // Call function to launch Python child process and retrieve OTP info
-    const parseOTP = otpData.split('@'); //Split response so that [0] = otp and [1] = time remaining on otp
-
-    let data = {}
-
-    // Check if TACACS+ server is down
-    if(parseOTP[0] == 'false'){// Server Down, retrieve and send backup data
-        data = {
-            link:'ssh://admin:admin@192.168.177.5',
-            time: '30'
-        }
-    }
-    else{ // Server is Up, retrieve and send TACACs data
-        data = {
-            link: `ssh://johnc:${parseOTP[0]}@192.168.177.5`,
-            time: parseOTP[1]
-        }
-    }
-
-    const secret = process.env.SECRET_KEY
-
-    console.log(data)
-    res.json(data) // Send otp info as JSON
-})
-
-/* 
- * Routes used for retrieving data from DB 
- */
 
 app.get("/history/:netId", async (req, res) => {
 
     const netId = req.params.netId
 
+    await connectToDatabase().catch(console.error)
     if(dbConnection){
-
         try{
             const netDb = await client.db('final_project').collection('networks').findOne({network_id: `${netId}`})
 
@@ -134,16 +84,18 @@ app.get("/history/:netId", async (req, res) => {
         // Database connection not established
         res.send("Error! Database connection not initiated")
     }
-
-
 })
 
+/*
+    -----------------------------------
+    DATATABLE ROUTES
+    -----------------------------------
+*/
 
 // Get Organisations from Db and return as JSON - Used for displaying data in table
 app.get("/organisations", async (req, res) => {
 
     await connectToDatabase().catch(console.error)
-
     if(dbConnection){
 
         try{
@@ -153,9 +105,7 @@ app.get("/organisations", async (req, res) => {
             const netDb = await client.db('final_project').collection('networks').find().toArray()
 
             try{
-            
                 let rowData = []
-
                 for(let i = 0; i < orgDb.length; i++){
 
                     let orgInfo = [0, 0]
@@ -176,16 +126,6 @@ app.get("/organisations", async (req, res) => {
                             }
                         }
                     }
-
-                    /*
-                    if(orgInfo[0] != 1){
-                        orgInfo[1] = `${orgInfo[0]} x sites`
-                    }
-                    else{
-                        orgInfo[1] = `${orgInfo[0]} x site`
-                    }
-                    */
-
                     siteInfo[2] = `${siteInfo[0]} x <i class="material-icons inline-icon ok-icon" id="deviceHealth">check_circle</i> ${siteInfo[1]} x <i class="material-icons inline-icon bad-icon" id="deviceHealth">cancel</i>`
 
                     rowData.push([orgDb[i]['org_id'], orgDb[i]['org_alias'], `${orgInfo[0]}`, `${siteInfo[2]}`])
@@ -200,7 +140,6 @@ app.get("/organisations", async (req, res) => {
             catch(error){
                 console.log(`Failed to extract database info, error message \n ${error}`)
             }
-
         }
         catch(error){
             // Request has failed
@@ -211,67 +150,12 @@ app.get("/organisations", async (req, res) => {
         // Database connection not established
         res.send("Error! Database connection not initiated")
     }
-    
-})
-
-// GET sites from documents within the sites collection, targets the documents org_id key
-app.get("/organisations/:orgId", async (req, res) => {
-
-    await connectToDatabase().catch(console.error)
-    
-    if(dbConnection){
-
-        try{
-            const parseData = req.params.orgId;
-
-            const siteDb = await client.db('final_project').collection('sites').find({org_id: `${parseData}`}).toArray();
-
-            res.render('sites.ejs', {orgId: parseData})
-        }
-        catch(error){
-            // Request has failed
-            res.send(`Request has failed, error message \n${error}`)
-        }
-    }
-    else{
-        // Database connection not established
-        res.send("Error! Database connection not initiated")
-    }
-
-})
-
-// GET networks from documents within the networks collection, targets the documents site_id key
-app.get("/organisations/:orgId/:siteId", async (req, res) => {
-
-    await connectToDatabase().catch(console.error)
-
-    if(dbConnection){
-
-        try{
-            const parseOrg = req.params.orgId;
-            const parseSite = req.params.siteId;
-
-            const netDb = await client.db('final_project').collection('networks').find({site_id: `${parseSite}`}).toArray();
-
-            res.render('networks.ejs', {orgId: parseOrg, siteId: parseSite})
-        }
-        catch(error){
-            // Request has failed
-            res.send(`Request has failed, error message \n${error}`)
-        }
-    }
-    else{
-        // Database connection not established
-        res.send("Error! Database connection not initiated")
-    }
-
 })
 
 // Get Sites listed to an Org and return as JSON - Used for displaying data in table
 app.get('/sites/:orgId', async (req, res) => {
 
     await connectToDatabase().catch(console.error)
-
     if(dbConnection){
         try{
 
@@ -282,7 +166,6 @@ app.get('/sites/:orgId', async (req, res) => {
             try{
             
                 let rowData = []
-
                 for(let i = 0; i < siteDb.length; i++){
 
                     let siteInfo = [0,0,0]
@@ -322,15 +205,12 @@ app.get('/sites/:orgId', async (req, res) => {
         // Database connection not established
         res.send("Error! Database connection not initiated")
     }
-    
-    //await closeDatabase().catch(console.error)
 })
 
 // Get Networks listed to a site and return as JSON - Used for displaying data in table
 app.get('/networks/:orgId/:siteId', async (req, res) => {
 
     await connectToDatabase().catch(console.error)
-
     if(dbConnection){
         try{
 
@@ -340,7 +220,6 @@ app.get('/networks/:orgId/:siteId', async (req, res) => {
             try{
 
                 let rowData = []
-
                 for(let i = 0; i < netDb.length; i++){
 
                     let status = ''
@@ -372,42 +251,26 @@ app.get('/networks/:orgId/:siteId', async (req, res) => {
     else{
         // Database connection not established
         res.send("Error! Database connection not initiated")
-    }
-    
-    //await closeDatabase().catch(console.error)
+    } 
 })
 
-app.get("/device/:netId/:cmd", async (req, res) => {
+/*
+    -----------------------------------
+    RENDER VIEW ROUTES
+    -----------------------------------
+*/
+
+// GET sites from documents within the sites collection, targets the documents org_id key
+app.get("/organisations/:orgId", async (req, res) => {
 
     await connectToDatabase().catch(console.error)
-
     if(dbConnection){
 
         try{
-            const parseNet = req.params.netId;
-            const parseCmd = req.params.cmd;
-        
-            // Uses findOne as network_id should be unique
-            const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
+            const parseData = req.params.orgId;
+            const siteDb = await client.db('final_project').collection('sites').find({org_id: `${parseData}`}).toArray();
 
-            let cmdResult = ''
-
-            switch(parseCmd){
-
-                case 'runconfig':
-                    cmdResult = components.CallDevice('show run', networkInfo.host).toString()
-                    break
-                case 'iproute':
-                    cmdResult = components.CallDevice('show ip route', networkInfo.host).toString()
-                    break
-                case 'env':
-                    cmdResult = components.CallDevice('show enviro all', networkInfo.host).toString()
-                    break
-                default:
-                    cmdResult = ''
-            }
-
-            res.json(cmdResult)
+            res.render('sites.ejs', {orgId: parseData})
         }
         catch(error){
             // Request has failed
@@ -418,30 +281,21 @@ app.get("/device/:netId/:cmd", async (req, res) => {
         // Database connection not established
         res.send("Error! Database connection not initiated")
     }
-
 })
 
-// Test route to launch Python commands
-app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
-  
-    await connectToDatabase().catch(console.error)
+// GET networks from documents within the networks collection, targets the documents site_id key
+app.get("/organisations/:orgId/:siteId", async (req, res) => {
 
+    await connectToDatabase().catch(console.error)
     if(dbConnection){
 
         try{
             const parseOrg = req.params.orgId;
             const parseSite = req.params.siteId;
-            const parseNet = req.params.netId;
-        
-            // Uses findOne as network_id should be unique
-            const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
+            
+            const netDb = await client.db('final_project').collection('networks').find({site_id: `${parseSite}`}).toArray();
 
-            const testCommand = 'show process cpu history'
-
-            // Test function to prove GNS3 virtual devices accept commands
-            let cmdResult = components.CallDevice(testCommand, networkInfo.host).toString()
-
-            res.render('result.ejs', {command: testCommand, result: cmdResult, orgId: parseOrg, siteId: parseSite, netId: parseNet})
+            res.render('networks.ejs', {orgId: parseOrg, siteId: parseSite})
         }
         catch(error){
             // Request has failed
@@ -452,13 +306,11 @@ app.get("/organisations/:orgId/:siteId/:netId", async (req, res) => {
         // Database connection not established
         res.send("Error! Database connection not initiated")
     }
-    
 })
 
 app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
 
     await connectToDatabase().catch(console.error)
-
     if(dbConnection){
 
         try{
@@ -525,20 +377,102 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
         // Database connection not established
         res.send("Error! Database connection not initiated")
     }
-    
-    //await closeDatabase().catch(console.error)
 })
+
+/*
+    -----------------------------------
+    COMMAND ROUTES
+    -----------------------------------
+*/
+
+// GET result of executing stored procedure.
+app.get("/device/:netId/:cmd", async (req, res) => {
+
+    await connectToDatabase().catch(console.error)
+    if(dbConnection){
+
+        try{
+            const parseNet = req.params.netId;
+            const parseCmd = req.params.cmd;
+        
+            // Uses findOne as network_id should be unique
+            const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
+
+            let cmdResult = ''
+
+            switch(parseCmd){
+
+                case 'runconfig':
+                    cmdResult = components.CallDevice('show run', networkInfo.host).toString()
+                    break
+                case 'iproute':
+                    cmdResult = components.CallDevice('show ip route', networkInfo.host).toString()
+                    break
+                case 'env':
+                    cmdResult = components.CallDevice('show enviro all', networkInfo.host).toString()
+                    break
+                default:
+                    cmdResult = ''
+            }
+
+            res.json(cmdResult)
+        }
+        catch(error){
+            // Request has failed
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        // Database connection not established
+        res.send("Error! Database connection not initiated")
+    }
+})
+
+// GET SSH Link
+app.get("/otp/:host", async (req,res) => {
+
+    // Call function to launch Python child process and retrieve OTP info
+    const otpData = components.CallOTP(process.env.TACACS_PRIV_STRING2)
+
+     //Split response so that [0] = otp and [1] = time remaining on otp
+    const parseOTP = otpData.split('@');
+
+    // Retrieve passed IP address.
+    const host = req.params.host;
+
+    let data = {}
+
+    // Check if TACACS+ server is down
+    if(parseOTP[0] == 'false'){// Server Down, send backup login details.
+        data = {
+            link:`ssh://${process.env.BACKUP_USERNAME}:${process.env.BACKUP_PASSWORD}@${host}`,
+            time: '60'
+        }
+    }
+    else{ // Server is Up, retrieve and send TACACs data
+        data = {
+            link: `ssh://johnc:${parseOTP[0]}@${host}`,
+            time: parseOTP[1]
+        }
+    }
+
+    res.json(data) // Send otp info as JSON
+})
+
+/*
+    -----------------------------------
+    ALERT ROUTES
+    -----------------------------------
+*/
 
 app.get('/alerts', async (req, res) =>{
 
     await connectToDatabase().catch(console.error)
-
     if(dbConnection){
 
         try{
 
             const alertInfo = await client.db('final_project').collection('alerts').find().toArray();
-
             try{
             
                 let rowData = []
@@ -566,15 +500,13 @@ app.get('/alerts', async (req, res) =>{
     else{
         res.send('Error! Database connection not initiated.')
     }
-
 })
 
 app.get('/alerts/:host', async (req, res) =>{
 
-    await connectToDatabase().catch(console.error)
-
     const host = req.params.host
-    
+
+    await connectToDatabase().catch(console.error)
     if(dbConnection){
 
         try{
@@ -604,65 +536,15 @@ app.get('/alerts/:host', async (req, res) =>{
     else{
         res.send('Error! Database connection not initiated.')
     }
-
 })
 
-app.post('/alerts', async (req, res) => {
-
-    console.log(req.body.host)
-    console.log(req.body.message)
-    
-})
-
-app.get('/uplinks/:host', async (req, res) =>{
-
-    try{
-        const host = req.params.host;
-
-        let uplinkHealth = components.UplinkHealth(host)
-        let timeStamp = new Date().toISOString()
-
-        const returnObj = {
-            [timeStamp]: uplinkHealth
-        }
-
-        res.json(returnObj)
-
-    }
-    catch(error){
-        res.send(`Request has failed, error message \n${error}`)
-    }
-
-})
-
+/*
+    -----------------------------------
+    FIREBASE CONFIG *** WIP ***
+    -----------------------------------
+*/
 function login(email, password){
     return null
-}
-
-function InitiateHealthCheck(){
-
-    let result = components.InitHealth()
-
-    return result;
-}
-
-
-function InitiateControllers(){
-
-}
-
-function InitiateSYSLOG(){
-
-    let result = components.InitSYSLOG()
-
-    return result;
-}
-
-function InitiateBGP(){
-
-    let result = components.InitBGP()
-
-    return result;
 }
 
 try{
@@ -681,9 +563,9 @@ try{
         firebase_initializeApp.initializeApp(firebaseConfig);
 
         // Test Credentials
-        let email = 'admin@netplus.co.uk'
-        let password = 'admin123'
-
+        let email = process.env.FIREBASE_TEST_EMAIL
+        let password = process.env.FIREBASE_TEST_PASSWORD
+        
         // Test login code
         const auth = firebase_auth.getAuth();
         firebase_auth.signInWithEmailAndPassword(auth, email, password)
@@ -700,15 +582,40 @@ catch(error){
     console.log(`Error, failed to load firebase SDK.\n${error}`)
 }
 
-// Initiate BGP using AS 100 and advertise 2x test routes
-let bgpInit = InitiateBGP()
-console.log(`BGP Status: ${bgpInit[0]}\n${bgpInit[1]}`)
- 
-let sysInit = InitiateSYSLOG()
-console.log(`SYSLOG Status: ${sysInit[0]}\n${sysInit[1]}`)
+/*
+    -----------------------------------
+    APP Start config
+    -----------------------------------
+*/
 
-let healthInit = InitiateHealthCheck()
-console.log(`SYSLOG Status: ${healthInit[0]}\n${healthInit[1]}`)
+// Function to initial Software-based controllers upon application launch.
+function InitiateControllers(){
+
+    let controllers = [['BGP'],['SYSLOG'],['ICMP']]
+    for(var x = 0; x < controllers.length; x++){
+
+        let result = ''
+        switch(controllers[x][0]){
+            case 'BGP':
+                result = components.InitBGP()
+                controllers[x] = ['BGP Status:', result[0], result[1]]
+                break;
+            case 'SYSLOG':
+                result = components.InitSYSLOG()
+                controllers[x] = ['SYSLOG Status:', result[0], result[1]]
+                break;
+            case 'ICMP':
+                result = components.InitHealth()
+                controllers[x] = ['ICMP Status:', result[0], result[1]]
+                break;
+            default:
+                break;
+        }
+    }
+    return(controllers)
+}
+
+console.log(InitiateControllers())
 
 // Listen on port 8443
 app.listen(8443, () => console.log("Server active"));

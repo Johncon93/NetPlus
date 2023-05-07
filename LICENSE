@@ -1,6 +1,36 @@
 MIT License
-
 Copyright (c) 2022 Johncon93
+
+-----------------------------------------------------------------------------
+                        The MIT License (MIT)
+        Also applies to the following 3rd Party resources: 
+        - ExaBGP,
+            Copyright (c) 2009-2020, Exa Networks Limited,
+            Copyright (c) 2009-2020, Thomas Mangin,
+            Copyright (c) 2014-2020, Nikita Shirokov,
+            Copyright (c) 2014-2020, Orange,
+            Copyright (c) 2015-2020, Alcatel-Lucent,
+            Copyright (c) 2016-2020, Job Snijders,
+            Copyright (c) 2016-2020, Evelio Vila,
+            Copyright (c) 2020-2020, Hiroki Shirokura
+        - NetMIKO,
+            Copyright (c) 2016 Kirk Byers
+        - Node.js
+            Copyright (c) Joyent, Inc
+        - Express.js
+            Copyright (c) 2009-2014 TJ Holowaychuk <tj@vision-media.ca>,
+            Copyright (c) 2013-2014 Roman Shtylman <shtylman+expressjs@gmail.com>,
+            Copyright (c) 2014-2015 Douglas Christopher Wilson <doug@somethingdoug.com>
+        - Bootstrap
+            Copyright (c) 2011-2023 The Bootstrap Authors
+        - PyOTP
+            Copyright (C) 2011-2021 Mark Percival <m@mdp.im>,
+            Nathan Reynolds <email@nreynolds.co.uk>, Andrey Kislyuk <kislyuk@gmail.com>,
+            and PyOTP contributors
+        - jquery.hotkeys, Copyright (c) 2010 John Resig
+            Copyright OpenJS Foundation and other contributors, https://openjsf.org/
+
+-----------------------------------------------------------------------------
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
