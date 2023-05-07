@@ -21,6 +21,9 @@ def Health_Check(host):
 # Function to send SSH command to target device.
 def send_ssh(command, host):
 
+    if ',' in command:
+        command = command.split(',')
+
     device = ''
     tac_check = Health_Check('192.168.177.200')
 
@@ -47,9 +50,13 @@ def send_ssh(command, host):
     net_connect = ConnectHandler(**device)
     net_connect.enable()
 
-    # Execute command via SSH and print result to terminal.
-    output = net_connect.send_command(command)
-    print(f"\n{output}")
+    if type(command) != type([]):
+        # Execute command via SSH and print result to terminal.
+        output = net_connect.send_command(command)
+        print(f"\n{output}")
+    else:
+        output = net_connect.send_config_set(command)
+        print(f"\n{output}")
 
     # Close SSH connection and flush the buffer to write everything into terminal.
     net_connect.close()

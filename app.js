@@ -4,7 +4,7 @@ const express = require("express");
 const {MongoClient} = require('mongodb');
 
 const bodyParser = require('body-parser');
-const urlencodedParser = bodyParser.urlencoded({ extended: false }) // Will be used for POST requests to parse req bodies
+const urlencodedParser = bodyParser.urlencoded({ extended: true }) // Will be used for POST requests to parse req bodies
 
 // Import Python.js script
 const components = require('./components.js');
@@ -15,7 +15,8 @@ const firebase_initializeApp = require("firebase/app")
 const firebase_auth = require("firebase/auth")
 
 const app = express();
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static('public')) // Allows use of static files with express and enables css / client JS to function correctly
 app.set('view-engine', 'ejs')
 
@@ -385,6 +386,58 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
     -----------------------------------
 */
 
+app.post("/device/:netId/:cmd", async (req, res) => {
+
+    let parsedBody = req.body.data
+
+    console.log(parsedBody.vlanId)
+    console.log(parsedBody.subMask)
+    console.log(parsedBody.host)
+
+    await connectToDatabase().catch(console.error)
+    if(dbConnection){
+
+        try{
+            const parseNet = req.params.netId;
+            const parseCmd = req.params.cmd;
+        
+            // Uses findOne as network_id should be unique
+            const networkInfo = await client.db('final_project').collection('networks').findOne({network_id: `${parseNet}`});
+
+            let cmdResult = ''
+
+            switch(parseCmd){
+
+                case 'vlanconf':
+                    cmdResult = components.CallDevice([`int vlan ${parsedBody.vlanId}`, `ip address ${parsedBody.host} ${parsedBody.subMask}`, 'end', `show run | section interface Vlan`], networkInfo.host).toString()
+                    break;
+                case 'natconf':
+                    console.log()
+                    break;
+                case 'dhcpconf':
+                    console.log()
+                    break;
+                case 'iprouteconf':
+                    console.log()
+                    break;
+                default:
+                    cmdResult = ''
+            }
+
+            res.json(cmdResult)
+        }
+        catch(error){
+            // Request has failed
+            res.send(`Request has failed, error message \n${error}`)
+        }
+    }
+    else{
+        // Database connection not established
+        res.send("Error! Database connection not initiated")
+    }
+})
+
+
 // GET result of executing stored procedure.
 app.get("/device/:netId/:cmd", async (req, res) => {
 
@@ -411,6 +464,21 @@ app.get("/device/:netId/:cmd", async (req, res) => {
                 case 'env':
                     cmdResult = components.CallDevice('show enviro all', networkInfo.host).toString()
                     break
+                case 'vlan':
+                    cmdResult = components.CallDevice('show run | section interface Vlan', networkInfo.host).toString()
+                    break;
+                case 'physical':
+                    cmdResult = components.CallDevice('show run | section interface Fast', networkInfo.host).toString()
+                    break;
+                case 'nat':
+                    cmdResult = components.CallDevice('show run | section ip nat inside source', networkInfo.host).toString()
+                    break;
+                case 'history':
+                    cmdResult = components.CallDevice('show history', networkInfo.host).toString()
+                    break;
+                case 'bgp':
+                    cmdResult = components.CallDevice('show ip bgp', networkInfo.host).toString()
+                    break;
                 default:
                     cmdResult = ''
             }

@@ -18,6 +18,10 @@ exports.CallDevice = (command, target) => {
     return response.toString();
 }
 
+exports.ConfigureDevice = (command, target) => {
+    
+}
+
 // Launch child process to get otp
 exports.CallOTP = (secret) => {
 

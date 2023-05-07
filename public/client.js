@@ -1,4 +1,9 @@
-// Function to retrieve SSH Commands from stored procedure interfaces
+/*
+    -----------------------------------
+    CODE FOR SENDING SSH COMMANDS TO DEVICE
+    -----------------------------------
+*/
+// Function to execute 'show' commands from stored procedures through SSH.
 async function GetCMD(btn){
 
     // GET DOM objects for button, collapsing card, and result TextArea.
@@ -23,12 +28,225 @@ async function GetCMD(btn){
 
 }
 
+// Function to execute 'configuration' commands from stored procedures through SSH.
 async function PostCMD(btn){
 
+    // GET HTML DOM Objects
     const commandBtn = document.getElementById(btn.id)
     const collapseToggle = document.getElementById('collapseConf')
-    const textDisplay = document.getElementById('confDisplay')
+    const confToggle = document.getElementById('confToggle')
+    var confContainer = document.getElementById('cmdCard')
+    confContainer.innerHTML = ''
 
+    var collapseHeader = document.createElement('h4')
+    collapseHeader.innerHTML = btn.innerHTML
+    confContainer.appendChild(collapseHeader)
+    
+    // Toggle collapsing card.
+    if(!collapseToggle.classList.contains('show')){
+        collapseToggle.classList.add('show')
+    }
+
+    // Function to apply label to Dynamic HTML Object
+    function ApplyLabel(comment, labelFor){
+
+        var label = document.createElement('label');
+        label.className = 'col-sm-2 control-label';
+        label.innerHTML = comment;
+        label.for = labelFor;
+
+        return label
+    }
+    
+    // Function to create new DIV for Dynamic HTML Objects
+    function CreateDiv(){
+
+        var div = document.createElement('div');
+        div.className = 'form-group';
+        div.id = 'dynDiv'
+        
+        return div;
+    }
+
+    // Function to create new COL for Dynamic HTML Objects
+    function CreateCol(){
+        var col = document.createElement('div');
+        col.className = 'col-sm-10';
+
+        return col;
+    }
+
+    // Function to dynamically create new Text Input Object
+    function CreateInput(type, placeholder){
+
+        var inputRow = document.createElement('input')
+        inputRow.className = 'form-control'
+        inputRow.type = type
+        inputRow.placeholder = placeholder
+
+        return inputRow
+    }
+
+    // Check if Configure VLAN stores procedure has been clicked.
+    if(commandBtn.dataset.url.includes('vlanconf')){
+
+        // Create new Text Input for VLAN entry, append into dynamically created COL and DIV parents.
+        var vlanId = CreateInput('text', '101 - 4094')
+        vlanId.id = 'vlanId'
+        var newDiv = CreateDiv()
+
+        var newLabel = ApplyLabel('VLAN Id', 'inputText')
+        newDiv.appendChild(newLabel);
+
+        var newCol = CreateCol()
+        newCol.appendChild(vlanId)
+
+        newDiv.appendChild(newCol)
+        confContainer.appendChild(newDiv)
+
+        // Create new Text Input for IP address entry, append into dynamically created COL and DIV parents.
+        var ipInput = CreateInput('text', '0.0.0.0')
+        ipInput.id = 'vlanIP'
+        var newDiv = CreateDiv()
+
+        var newLabel = ApplyLabel('IP Address', 'inputText')
+        newDiv.appendChild(newLabel);
+
+        var newCol = CreateCol()
+        newCol.appendChild(ipInput)
+
+        newDiv.appendChild(newCol)
+        confContainer.appendChild(newDiv)
+
+        // Create new SELECT drop-down for choosing Subnet Mask, append into dynamically created COL and DIV parents.
+        var selectSubnet = document.createElement('select')
+        selectSubnet.className = 'custom-select'
+        selectSubnet.id = 'vlanSelect'
+    
+        var initialOption = document.createElement("option");
+        initialOption.textContent = 'Select subnet mask';
+        initialOption.value = null;
+    
+        selectSubnet.appendChild(initialOption);
+
+        // Code to calculate subnet mask from given bit value inspired by below link.
+        // https://stackoverflow.com/questions/27261281/function-for-subnet-mask
+        function NetMaskCalc(bits){
+            
+            let subnetMask = []
+            for(var x = 0; x < 4; x++){ // Loop through each octect and calculate binary value.
+                let octet = Math.min(bits, 8)
+                subnetMask.push(256 - Math.pow(2, 8 - octet)) // Push octect to array
+                bits -= octet
+            }
+            return subnetMask.join('.')
+        }
+
+        // Loop through dynamic SELECT menu and insert a value for each possible subnet mask (0 is excluded for this function as it adds an SVI host IP)
+        for(var x = 1; x <= 32; x++){
+
+            // Create and append new options with given value
+            var newOption = document.createElement("option");
+            newOption.textContent = `/${x}`;
+            newOption.value = NetMaskCalc(x) // Identify subnet mask from given bit value.
+
+            selectSubnet.appendChild(newOption);
+        }
+
+        // Dynamically create DIV, COL, and LABEL for the SELECT menu.
+        var newDiv = CreateDiv()
+        var newLabel = ApplyLabel('Subnet Mask', 'inputText')
+        newDiv.appendChild(newLabel);
+
+        var newCol = CreateCol()
+        newCol.appendChild(selectSubnet)
+
+        newDiv.appendChild(newCol)
+        confContainer.appendChild(newDiv)
+
+        // Create and insert a button to execute ConfigCMD function.
+        var submitBtn = document.createElement('button')
+        // Set button attributes.
+        submitBtn.className = 'btn btn-primary'
+        submitBtn.id = 'vlanBtn'
+        submitBtn.type = 'button'
+        submitBtn.innerHTML = 'Create SVI'
+        submitBtn.dataset.url = btn.dataset.url
+        submitBtn.setAttribute("onclick", 'ConfigCMD(this)')
+
+        var newDiv = CreateDiv()
+
+        var newCol = CreateCol()
+        newCol.appendChild(submitBtn)
+
+        newDiv.appendChild(newCol)
+        confContainer.appendChild(newDiv)
+    }
+}
+
+async function ConfigCMD(btn){
+
+    const confToggle = document.getElementById('confToggle')
+    // Toggle collapsing card.
+    if(!confToggle.classList.contains('show')){
+        confToggle.classList.add('show')
+    }
+
+    if(btn.dataset.url.includes('vlanconf')){
+
+        let vlanId = document.getElementById('vlanId')
+        let ipAddr = document.getElementById('vlanIP')
+        let selectOpt = document.getElementById('vlanSelect')
+        const textDisplay = document.getElementById('confDisplay')
+
+        let ipCheck = ipAddr.value.split('.')
+
+        let realIP = true
+        if(ipCheck.length == 4){
+            if(ipCheck[0] >= 1 && ipCheck[0] < 255){
+
+                for(var x = 1; x < (ipCheck.length); x++){
+                    if(parseInt(ipCheck[x]) >= 0 && parseInt(ipCheck[x]) < 255){
+                        realIP = true
+                    }
+                    else{
+                        realIP = false
+                        alert('Invalid IP address')
+                    }
+                }
+            }
+            else{
+                realIP = false
+                alert('Invalid IP address')
+            }
+            if(realIP){
+                let data = {
+                    host: `${ipAddr.value}`,
+                    vlanId: `${vlanId.value}`,
+                    subMask: `${selectOpt.value}`
+                }
+
+                const response = await fetch(btn.dataset.url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({data}),
+                    });
+
+                let cmdResult = await response.json()
+
+                textDisplay.hidden = false
+
+                // Display response as string in result TextArea.
+                textDisplay.innerHTML = cmdResult.toString()
+            }
+        }
+        else{
+            realIP = false
+            alert('Invalid IP address')
+        }
+    }
 }
 
 // Function to stop any active ICMP sessions when attempting to leave the page.

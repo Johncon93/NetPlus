@@ -121,9 +121,9 @@
                   <br>
                   <div class="btn-group btn-group-justified">
                     <a class="btn btn-primary" id="getPyhsical" onclick="GetCMD(this)" data-url="/device/<%=netId%>/physical">Show Physical interfaces</a>
-                    <a class="btn btn-primary" id="getNat" onclick="GetCMD(this)" data-url="/device/<%=netId%>/">Show NAT rules</a>
-                    <a class="btn btn-primary" id="getHistory" onclick="GetCMD(this)" data-url="/device/<%=netId%>/">Show command history</a>
-                    <a class="btn btn-primary" id="getBgp" onclick="GetCMD(this)" data-url="/device/<%=netId%>/">Show BGP</a>
+                    <a class="btn btn-primary" id="getNat" onclick="GetCMD(this)" data-url="/device/<%=netId%>/nat">Show NAT rules</a>
+                    <a class="btn btn-primary" id="getHistory" onclick="GetCMD(this)" data-url="/device/<%=netId%>/history">Show command history</a>
+                    <a class="btn btn-primary" id="getBgp" onclick="GetCMD(this)" data-url="/device/<%=netId%>/bgp">Show BGP</a>
                   </div> 
                   <!-- Collapsing card with TextArea for displaying result of SSH commands -->
                   <div class="collapse" id="collapseResult">
@@ -135,15 +135,21 @@
                   <h4><small>Configure device</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
-                    <a class="btn btn-primary" id="postVlan" onclick="PostCMD(this)">Configure SVI</a>
-                    <a class="btn btn-primary" id="postNat" onclick="PostCMD(this)">Configure NAT</a>
-                    <a class="btn btn-primary" id="postDhcp" onclick="PostCMD(this)">Configure DHCP</a>
-                    <a class="btn btn-primary" id="postRoute" onclick="PostCMD(this)">Configure Route</a>
+                    <a class="btn btn-primary" id="postVlan" onclick="PostCMD(this)" data-url="/device/<%=netId%>/vlanconf">Configure SVI</a>
+                    <a class="btn btn-primary" id="postNat" onclick="PostCMD(this)" data-url="/device/<%=netId%>/natconf" disabled>Configure NAT</a>
+                    <a class="btn btn-primary" id="postDhcp" onclick="PostCMD(this)" data-url="/device/<%=netId%>/dhcpconf" disabled>Configure DHCP</a>
+                    <a class="btn btn-primary" id="postRoute" onclick="PostCMD(this)" data-url="/device/<%=netId%>/iprouteconf" disabled>Configure Route</a>
                   </div>
                   
                   <div class="collapse" id="collapseConf">
-                    <div class="card card-body">
-                      <textarea class="form-control" id="confDisplay" rows="20" cols="150" readonly></textarea>
+                    <div class="card card-body" id="cmdCard">
+                      <div id="cmdForm">
+                      </div>
+                    </div>
+                    <div class="collapse" id="confToggle">
+                      <div class="card card-body">
+                        <textarea class="form-control" id="confDisplay" rows="20" cols="150" readonly></textarea>
+                      </div>
                     </div>
                   </div>
                   
