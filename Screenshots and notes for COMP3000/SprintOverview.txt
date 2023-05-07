@@ -1,0 +1,81 @@
+Notable Milestones
+    08/10/2022 - Initial Commit
+
+10/10/22 - Sprint 1
+
+    16/10/2022 - Database connection
+    18/10/2022 - Database changes and Python Integration
+    20/10/2022 - Basic front-end, client-server side testing
+    22/10/2022 - Implementation of ENV variables to protect credentials
+    23/10/2022 - Dynamic table integration for Organisations
+
+24/10/22 - Sprint 2
+
+    28/10/2022 - Dynamic table for Sites
+    30/10/2022 - TACACs + SSH impementation
+    01/11/2022 - Network table
+    02/11/2022 - Drop-down menu front-end
+
+07/11/22 - Sprint 3
+
+    13/11/2022 - Dynamic drop-down menu's and URI re-direction
+    17/11/2022 - Implementation of Alerts
+
+21/11/22 - Sprint 4
+
+    28/11/2022 - Basic BGP connectivity
+    29/11/2022 - BGP adjustments and 1st Network re-build
+    03/12/2022 - Live traffic graph display
+
+05/12/22 - Sprint 5
+
+
+    08/12/2022 - Back-end alert functionality
+    13/12/2022 - BGP network documentation
+    15/12/2022 - BGP network refinement
+
+16/01/23 - Sprint 6
+
+    17/01/2023 - Front-end breadcrumbs, BGP proof of concept
+    24/01/2023 - SYSLOG Integration
+    28/01/2023 - Further network documentation
+    29/01/2023 - Code cleanup and implementation of controllers
+
+30/01/23 - Sprint 7
+
+    30/01/2023 - Health check test build
+    31/01/2023 - Health check history
+    05/02/2023 - SSH Controller and front-end device page 1st draft
+    11/02/2023 - Device page 2nd draft
+
+13/02/23 - Sprint 8
+
+    13/02/2023 - Device page changes
+    16/02/2023 - Device page polished version
+    25/02/2023 - 2nd Network re-build
+
+27/02/23 - Sprint 9
+
+    02/03/2023 - Health check polished build
+    06/03/2023 - Release version of SSH commands
+
+13/03/23 - Sprint 10
+
+    13/03/2023 - Dynamic table data changes and traffic flow history graphs
+    14/03/2023 - DNS progress
+    15/03/2023 - Firebase template
+
+
+10/04/23 - Sprint 11
+
+    11/04/2023 - Polished report diagrams
+    12/04/2023 - SME example
+    18/04/2023 - Report progress
+    22/04/2023 - Further report progress
+
+24/04/23 - Sprint 12
+
+    01/05/2023 - Documentation update
+    03/05/2023 - 3rd Network re-build
+    07/05/2023 - Migration of test environment to live build
+

@@ -611,9 +611,10 @@ app.get('/alerts/:host', async (req, res) =>{
     FIREBASE CONFIG *** WIP ***
     -----------------------------------
 */
-function login(email, password){
-    return null
-}
+
+app.get('/login', (req,res) => {
+    
+})
 
 try{
     const firebaseConfig = {
