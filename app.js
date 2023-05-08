@@ -4,7 +4,6 @@ const express = require("express");
 const {MongoClient} = require('mongodb');
 
 const bodyParser = require('body-parser');
-const urlencodedParser = bodyParser.urlencoded({ extended: true }) // Will be used for POST requests to parse req bodies
 
 // Import Python.js script
 const components = require('./components.js');
@@ -14,6 +13,7 @@ const { response } = require('express');
 const firebase_initializeApp = require("firebase/app")
 const firebase_auth = require("firebase/auth")
 
+// Set express server parameters.
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,14 +45,14 @@ async function connectToDatabase(){
     UPLINK ROUTES
     -----------------------------------
 */
-
+// BEG live traffic data for device and return as JSON for graph visualisation.
 app.get('/uplinks/:host', async (req, res) =>{
 
     try{
         const host = req.params.host;
 
         let uplinkHealth = components.UplinkHealth(host)
-        let timeStamp = new Date().toISOString()
+        let timeStamp = new Date().toISOString() // Create current timestamp.
 
         const returnObj = {
             [timeStamp]: uplinkHealth
@@ -64,7 +64,7 @@ app.get('/uplinks/:host', async (req, res) =>{
         res.send(`Request has failed, error message \n${error}`)
     }
 })
-
+// GET Historic health data for given device and return JSON for graph visualisation.
 app.get("/history/:netId", async (req, res) => {
 
     const netId = req.params.netId
@@ -224,7 +224,7 @@ app.get('/networks/:orgId/:siteId', async (req, res) => {
                 for(let i = 0; i < netDb.length; i++){
 
                     let status = ''
-                    if(netDb[i]['status'] == true){ // Check if device was last seen alive or dead then adjust icon accordingly.
+                    if(netDb[i]['status'] == true){ // Check if device was last seen alive or dead then adjust health status icon accordingly.
                         status = `<span id="ok-icon" class="material-symbols-outlined"><i class="material-icons":>check_circle</i></span>`
                     }
                     else{
@@ -309,6 +309,7 @@ app.get("/organisations/:orgId/:siteId", async (req, res) => {
     }
 })
 
+// GET device parameters and return device management view
 app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
 
     await connectToDatabase().catch(console.error)
@@ -355,7 +356,7 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
                 status = `cancel`
             }
 
-            res.render('device.ejs', {
+            res.render('device.ejs', { // Pass device attributes back to client.
                 siteAddress: addrString,
                 orgId: parseOrg, 
                 siteId: parseSite, 
@@ -386,13 +387,10 @@ app.get("/device/:orgId/:siteId/:netId", async (req, res) => {
     -----------------------------------
 */
 
+// POST request used to send configuration commands to device.
 app.post("/device/:netId/:cmd", async (req, res) => {
 
     let parsedBody = req.body.data
-
-    console.log(parsedBody.vlanId)
-    console.log(parsedBody.subMask)
-    console.log(parsedBody.host)
 
     await connectToDatabase().catch(console.error)
     if(dbConnection){
@@ -406,8 +404,8 @@ app.post("/device/:netId/:cmd", async (req, res) => {
 
             let cmdResult = ''
 
+            // Switch statement to parse incoming 'config command' stored procedure and send corresponding command(s) to device.
             switch(parseCmd){
-
                 case 'vlanconf':
                     cmdResult = components.CallDevice([`int vlan ${parsedBody.vlanId}`, `ip address ${parsedBody.host} ${parsedBody.subMask}`, 'end', `show run | section interface Vlan`], networkInfo.host).toString()
                     break;
@@ -453,6 +451,7 @@ app.get("/device/:netId/:cmd", async (req, res) => {
 
             let cmdResult = ''
 
+            // Switch statement to parse incoming 'show command' stored procedure and send corresponding command to device.
             switch(parseCmd){
 
                 case 'runconfig':
@@ -533,23 +532,22 @@ app.get("/otp/:host", async (req,res) => {
     -----------------------------------
 */
 
+// GET Request to retrieve all alerts for networks a user has access to.
 app.get('/alerts', async (req, res) =>{
 
     await connectToDatabase().catch(console.error)
     if(dbConnection){
 
         try{
-
             const alertInfo = await client.db('final_project').collection('alerts').find().toArray();
             try{
             
                 let rowData = []
-
                 for(let i = 0; i < alertInfo.length; i++){
 
                     rowData.push([alertInfo[i]['time'], alertInfo[i]['host'], alertInfo[i]['message']])
                 }
-                //rowData = rowData.reverse()
+
                 const data = {
                     headers: ['Time', 'Host', 'Message'],
                     rows: rowData
@@ -559,7 +557,6 @@ app.get('/alerts', async (req, res) =>{
             catch(error){
                 console.log(`Failed to extract database info, error message \n ${error}`)
             }
-
         }
         catch(error){
             res.send(`Request has failed, error message \n${error}`)
@@ -570,18 +567,18 @@ app.get('/alerts', async (req, res) =>{
     }
 })
 
+// GET Request to retrieve alerts for a given host. Used to populate device management alert table.
 app.get('/alerts/:host', async (req, res) =>{
 
     const host = req.params.host
 
     await connectToDatabase().catch(console.error)
     if(dbConnection){
-
         try{
+
             const alertInfo = await client.db('final_project').collection('alerts').find().toArray();
 
             let rowData = []
-
             for(let i = 0; i < alertInfo.length; i++){
 
                 if(alertInfo[i]['host'].toString().includes(host.toString())){
@@ -594,10 +591,8 @@ app.get('/alerts/:host', async (req, res) =>{
                 rows: rowData
             }
             res.json(data)
-
         }
         catch(error){
-    
             res.send(`Request has failed, error message \n${error}`)
         }
     }

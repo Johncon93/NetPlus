@@ -1,0 +1,118 @@
+Building configuration...
+
+Current configuration : 1671 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+!
+hostname Network43
+!
+boot-start-marker
+boot-end-marker
+!
+!
+no aaa new-model
+memory-size iomem 15
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+no ip dhcp use vrf connected
+ip dhcp excluded-address 10.10.43.1 10.10.43.10
+ip dhcp excluded-address 10.10.43.200 10.10.43.254
+!
+ip dhcp pool LAN
+   network 10.10.43.0 255.255.255.0
+   default-router 10.10.43.1
+   dns-server 8.8.8.8 8.8.4.4
+!
+!
+no ip domain lookup
+ip domain name JCLAB
+ip auth-proxy max-nodata-conns 3
+ip admission max-nodata-conns 3
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username admin privilege 15 secret 5 $1$Iy3A$QNtg8xFZ7RwHX6DO0Vsn10
+!
+!
+ip tcp synwait-time 5
+ip ssh version 2
+!
+!
+!
+!
+!
+interface FastEthernet0
+ description ***LAN_Uplink***
+ ip address 10.10.43.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly
+ speed auto
+!
+interface Serial0
+ description ***WAN_Uplink***
+ ip address 192.168.43.2 255.255.255.252
+ ip nat outside
+ ip virtual-reassembly
+!
+interface Serial1
+ no ip address
+ shutdown
+!
+interface Serial2
+ no ip address
+ shutdown
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 192.168.43.1
+!
+!
+no ip http server
+no ip http secure-server
+ip nat inside source list 1 interface Serial0 overload
+ip nat inside source static tcp 10.10.43.250 22 interface Serial0 2200
+!
+access-list 100 permit tcp any any eq 22
+no cdp log mismatch duplex
+!
+!
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ login local
+ transport input ssh
+!
+end

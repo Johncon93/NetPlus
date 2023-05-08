@@ -28,16 +28,17 @@ async function GetCMD(btn){
 
 }
 
-// Function to execute 'configuration' commands from stored procedures through SSH.
+// Function to dynamically create INPUT forms for configuration stored procedures.
 async function PostCMD(btn){
 
     // GET HTML DOM Objects
     const commandBtn = document.getElementById(btn.id)
     const collapseToggle = document.getElementById('collapseConf')
-    const confToggle = document.getElementById('confToggle')
+
     var confContainer = document.getElementById('cmdCard')
     confContainer.innerHTML = ''
 
+    // Create new H4 and populate title with selected stored procedure name.
     var collapseHeader = document.createElement('h4')
     collapseHeader.innerHTML = btn.innerHTML
     confContainer.appendChild(collapseHeader)
@@ -47,7 +48,7 @@ async function PostCMD(btn){
         collapseToggle.classList.add('show')
     }
 
-    // Function to apply label to Dynamic HTML Object
+    // Function to create a dynamic label for newly created HTML DOM Objects.
     function ApplyLabel(comment, labelFor){
 
         var label = document.createElement('label');
@@ -58,7 +59,7 @@ async function PostCMD(btn){
         return label
     }
     
-    // Function to create new DIV for Dynamic HTML Objects
+    // Function to create a dynamic parent DIV for newly created child HTML DOM Objects.
     function CreateDiv(){
 
         var div = document.createElement('div');
@@ -68,7 +69,7 @@ async function PostCMD(btn){
         return div;
     }
 
-    // Function to create new COL for Dynamic HTML Objects
+    // Function to create a dynamic parent COL for newly created child HTML FORMS.
     function CreateCol(){
         var col = document.createElement('div');
         col.className = 'col-sm-10';
@@ -182,25 +183,33 @@ async function PostCMD(btn){
         newDiv.appendChild(newCol)
         confContainer.appendChild(newDiv)
     }
+    else {
+        // Add further configuration stored procedures here.
+    }
 }
 
+// Function to send configuration SSH commands to the server and parse response.
 async function ConfigCMD(btn){
 
     const confToggle = document.getElementById('confToggle')
+
     // Toggle collapsing card.
     if(!confToggle.classList.contains('show')){
         confToggle.classList.add('show')
     }
 
+    // Check if configure VLAN stored procedure has been clicked.
     if(btn.dataset.url.includes('vlanconf')){
 
+        // GET dynamic objects created by PostCMD function.
         let vlanId = document.getElementById('vlanId')
         let ipAddr = document.getElementById('vlanIP')
         let selectOpt = document.getElementById('vlanSelect')
         const textDisplay = document.getElementById('confDisplay')
 
-        let ipCheck = ipAddr.value.split('.')
+        let ipCheck = ipAddr.value.split('.') // Split given IP into a list.
 
+        // Check if the IP format and octet values form a valid IP Address.
         let realIP = true
         if(ipCheck.length == 4){
             if(ipCheck[0] >= 1 && ipCheck[0] < 255){
@@ -220,12 +229,15 @@ async function ConfigCMD(btn){
                 alert('Invalid IP address')
             }
             if(realIP){
+
+                // Create object with given values.
                 let data = {
                     host: `${ipAddr.value}`,
                     vlanId: `${vlanId.value}`,
                     subMask: `${selectOpt.value}`
                 }
 
+                // Submit POST request to server
                 const response = await fetch(btn.dataset.url, {
                     method: 'POST',
                     headers: {
@@ -236,6 +248,7 @@ async function ConfigCMD(btn){
 
                 let cmdResult = await response.json()
 
+                // Reveal hidden text area for results display.
                 textDisplay.hidden = false
 
                 // Display response as string in result TextArea.
@@ -262,6 +275,7 @@ function stopICMP(){
     -----------------------------------
 */
 
+// Function to create graph detailing historic device health data.
 function historyGraph(timeWindow, history){
 
     // ToDo: log scale for the y axis
@@ -291,49 +305,63 @@ function historyGraph(timeWindow, history){
 
 }
 
+// Function to display historic device health data form given time period.
 async function UplinkHistory(btn){
 
     const uplink = document.getElementById(btn.id)
     const collapseToggle = document.getElementById('collapseExample')
 
-    collapseToggle.classList.toggle('show')
+    collapseToggle.classList.toggle('show') // Reveal hidden chart.
 
     let timeWindow = uplink.id.split('y')
-    timeWindow = timeWindow[1]
-    const response = await fetch(uplink.dataset.url)
+    timeWindow = timeWindow[1] // Set variable to store given time period.
 
+    // GET health data from database.
+    const response = await fetch(uplink.dataset.url)
     let historyData = await response.json()
 
     let history = []
-    if(timeWindow <= 288){
+    if(timeWindow <= 288){ // Display last hour of health data.
         for(var x = 0; x < timeWindow; x++){
-
+            
+            // If device is up then ICMP result is stores as a float, if it is down then it is a string.
+            // This determines if value is a float and then pushes data to array.
             if(parseFloat(historyData[0][x])){
                 history.push(historyData[0][x])
             }
             else(
-                history.push(0)
+                history.push(0.0001) // Stored data was not a float, stored lowest possible value.
             )
         }
     }
     else{
 
-        historyData = []
+        /*
+        *
+        *   Historic data greater than 24 hours is only available on certain devices.
+        *   This is because the device needs to be active to populate database.
+        *   For demonstration purposes data for any time period >= 24 hours will be randomly generated.
+        *         
+        */
 
+        // Create new array and fill will 30 slots containing a nested array of size 288.
+        historyData = []
         for(var x = 0; x < 30; x++){
 
             historyData.push([288])
 
+            // Fill each slot of the nested array with random data.
             for(var y = 0; y < historyData[x].length; y++){
                 historyData[x][y] = Array.apply(null, {length: 288}).map(Function.call, Math.random)
             }
         }
 
+        // Nested loops used to populate history health data for 24 hour - 30 day periods.
+        // For information about the data logic please see diagram under /design/VID-HealthCheck.png
         var z = 0;
         Loop1:
         for(var x = 0; x < historyData.length; x++){
 
-            //historyData[x] = Array.apply(null, {length: 288}).map(Function.call, Math.random)
             Loop2:
             for(var y = 0; y < historyData[x].length; y++){
                 Loop3:
@@ -344,11 +372,10 @@ async function UplinkHistory(btn){
                         z += 1
                     }
                     else{
-                        history.push(0)
+                        history.push(0.0001)
                         z += 1
                     }
                     if(z == timeWindow){
-                        console.log('Z has reached value: ' + z)
                         x = historyData.length
                         break Loop2
                     }
@@ -358,10 +385,8 @@ async function UplinkHistory(btn){
         }
     }
 
-    console.log(history)
-
+    // Call history graph function to generate new graph using given time period and data.
     historyGraph(timeWindow, history)
-
 }
 
 /*
@@ -384,6 +409,7 @@ async function UplinkStatus(btn){
 
     const uplinkChart = document.getElementById('uplink-chart').getContext('2d');
 
+    // Set chart display data and labelling information.
     const chartData = {
         labels: dataTime,
         datasets: [{
@@ -394,6 +420,7 @@ async function UplinkStatus(btn){
         }]
     }
 
+    // Create new instance of chart and populate with display data.
     const myChart = new Chart(uplinkChart, {
         type: 'line',
         data: chartData,
@@ -421,17 +448,19 @@ async function UplinkStatus(btn){
 
         if(true && active == true){
 
+            // GET Request to retrieve live traffic data.
             const response = await fetch(uplink.dataset.url)
-
             const data = await response.json()
         
+            // Parse JSON result and amend string to remove artifacts.
             const dataParse = JSON.stringify(data).split(':"')
             dataParse[0] = dataParse[0].replace('{', '')
             dataParse[1] = dataParse[1].replace('"', '').replace('}', '')
         
-            //uplinkStatus.innerHTML += `Time: ${dataParse[0]} Status: ${dataParse[1]}\n`
+            // Increment counter
             counter += 1
 
+            // Update device status icons based on last result.
             function UpdateIcon(icon, status){
 
                 if(icon.innerHTML == 'cancel' && status == 1){
@@ -446,19 +475,20 @@ async function UplinkStatus(btn){
                 }                
             }
 
+            // Switch statement to parse server response and push to datastream.
             let status = 0
             switch(dataParse[1]){
                 case 'TO': 
-                dataStream.push(parseFloat('0'))
-                dataTime.push(parseFloat('0'))
+                dataStream.push(parseFloat('0.0001'))
+                dataTime.push(parseFloat('0.0001'))
                 break;
                 case 'CR': 
-                dataStream.push(parseFloat('0'))
-                dataTime.push(parseFloat('0'))
+                dataStream.push(parseFloat('0.0001'))
+                dataTime.push(parseFloat('0.0001'))
                 break;
                 case 'ERR': 
-                dataStream.push(parseFloat('0'))
-                dataTime.push(parseFloat('0'))
+                dataStream.push(parseFloat('0.0001'))
+                dataTime.push(parseFloat('0.0001'))
                 break;
                 default:
                 status = 1
@@ -466,9 +496,10 @@ async function UplinkStatus(btn){
                 dataTime.push(dataParse[0])
             }
 
+            // Update icon with observed result.
             UpdateIcon(healthIcon, status)
             
-            if(counter > 10){
+            if(counter > 10){ // Enables the never-ending scroll effect on graph.
 
                 dataStream.shift()
                 dataTime.shift()
@@ -479,7 +510,7 @@ async function UplinkStatus(btn){
         else{
             clearInterval(timeInterval) //Clear interval to prevent never-ending loop
         }
-    }, 3000);
+    }, 3000); // Set interval time to 3 seconds.
 }
 
 /*

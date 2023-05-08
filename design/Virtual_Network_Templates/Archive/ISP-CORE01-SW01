@@ -1,0 +1,218 @@
+Building configuration...
+
+Current configuration : 3839 bytes
+!
+version 12.4
+service timestamps debug datetime msec
+service timestamps log datetime localtime
+no service password-encryption
+!
+hostname ISP-CORE01-SW01
+!
+boot-start-marker
+boot-end-marker
+!
+logging console informational
+enable secret 5 $1$gfS9$VL.UaGs5AGejQlv4fF1eK/
+!
+aaa new-model
+!
+!
+aaa group server tacacs+ Virtual-lab
+ server 192.168.177.200
+!
+aaa authentication login default group tacacs+ local
+!
+!
+aaa session-id common
+memory-size iomem 5
+clock summer-time UTC recurring
+no ip icmp rate-limit unreachable
+ip cef
+!
+!
+!
+!
+no ip domain lookup
+ip domain name JCLAB
+ip name-server 8.8.8.8
+ip name-server 8.8.4.4
+!
+multilink bundle-name authenticated
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+username admin privilege 15 secret 5 $1$q5SE$uwYXICj6YA2FQWY.P7dxa/
+archive
+ log config
+  hidekeys
+!
+!
+!
+!
+ip tcp synwait-time 5
+ip ssh port 2200 rotary 1
+ip ssh version 2
+!
+!
+!
+!
+!
+interface FastEthernet0/0
+ ip address 10.10.10.1 255.255.255.252
+ duplex auto
+ speed auto
+!
+interface FastEthernet0/1
+ no ip address
+ duplex auto
+ speed auto
+!
+interface FastEthernet1/0
+!
+interface FastEthernet1/1
+ description ***SPINE01-SW01_UPLINK***
+ switchport mode trunk
+!
+interface FastEthernet1/2
+ description ***SPINE01-SW02_UPLINK***
+ switchport mode trunk
+!
+interface FastEthernet1/3
+ description ***SPINE01-SW03_UPLINK***
+ switchport mode trunk
+!
+interface FastEthernet1/4
+ description ***SPINE01-SW04_UPLINK***
+ switchport mode trunk
+!
+interface FastEthernet1/5
+!
+interface FastEthernet1/6
+!
+interface FastEthernet1/7
+!
+interface FastEthernet1/8
+!
+interface FastEthernet1/9
+!
+interface FastEthernet1/10
+!
+interface FastEthernet1/11
+!
+interface FastEthernet1/12
+!
+interface FastEthernet1/13
+!
+interface FastEthernet1/14
+ description ***HA-PairUplink***
+ switchport access vlan 100
+!
+interface FastEthernet1/15
+ description ***WAN_Uplink***
+ switchport access vlan 100
+!
+interface Vlan1
+ ip address 172.16.16.1 255.255.255.0
+ ip nat inside
+ ip virtual-reassembly
+ standby 0 ip 172.16.16.5
+ standby 0 priority 105
+ standby 0 preempt
+ standby 0 track FastEthernet1/14
+!
+interface Vlan100
+ description ***WAN_Uplink***
+ ip address 192.168.177.3 255.255.255.0
+ ip nat outside
+ ip virtual-reassembly
+ standby 10 ip 192.168.177.5
+ standby 10 priority 105
+ standby 10 preempt
+ standby 10 track FastEthernet1/14
+!
+router bgp 100
+ no synchronization
+ bgp log-neighbor-changes
+ neighbor 192.168.177.1 remote-as 100
+ no auto-summary
+!
+ip forward-protocol nd
+ip route 0.0.0.0 0.0.0.0 192.168.177.2
+!
+!
+no ip http server
+no ip http secure-server
+ip nat inside source static tcp 172.16.16.101 2200 192.168.177.5 2201 extendable
+ip nat inside source static tcp 172.16.16.102 2200 192.168.177.5 2202 extendable
+ip nat inside source static tcp 172.16.16.103 2200 192.168.177.5 2203 extendable
+ip nat inside source static tcp 172.16.16.104 2200 192.168.177.5 2204 extendable
+ip nat inside source static 172.16.16.101 192.168.177.11
+ip nat inside source static 172.16.16.102 192.168.177.12
+ip nat inside source static 172.16.16.201 192.168.177.21
+ip nat inside source static 192.168.30.2 192.168.177.130
+ip nat inside source static 192.168.31.2 192.168.177.131
+ip nat inside source static 192.168.40.2 192.168.177.140
+ip nat inside source static 192.168.41.2 192.168.177.141
+ip nat inside source static 192.168.50.2 192.168.177.150
+ip nat inside source static 192.168.51.2 192.168.177.151
+!
+logging 192.168.177.1
+access-list 1 permit 172.16.16.0 0.0.0.255
+no cdp log mismatch duplex
+!
+!
+!
+!
+!
+tacacs-server host 192.168.177.200
+tacacs-server key cisco
+!
+control-plane
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!
+line con 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line aux 0
+ exec-timeout 0 0
+ privilege level 15
+ logging synchronous
+line vty 0 4
+ privilege level 15
+ rotary 1
+ transport input ssh
+line vty 5 15
+ privilege level 15
+ rotary 1
+ transport input ssh
+!
+!
+end
