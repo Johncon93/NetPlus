@@ -1,5 +1,9 @@
 // Import node packages
-require('dotenv/config');
+
+const dotenv = require('dotenv')
+dotenv.config()
+
+//require('dotenv/config');
 const express = require("express");
 const {MongoClient} = require('mongodb');
 
@@ -26,6 +30,10 @@ app.set('view-engine', 'ejs')
     DATABASE CONNECTION CONFIG
     -----------------------------------
 */
+
+const buf = Buffer.from('hello world')
+const opt = { debug: true }
+const config = dotenv.parse(buf, opt)
 
 const client = new MongoClient(process.env.MONGODB_PRIV_STRING);
 let dbConnection = false;
