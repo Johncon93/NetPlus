@@ -286,20 +286,21 @@ function historyGraph(timeWindow, history){
       data: {
         labels: Array.apply(null, {length: timeWindow}).map(Number.call, Number),
         datasets: [{
-          label: `${timeWindow} History`,
-          data: history
+          label: `${(timeWindow*2)} History`,
+          data: history,
+          spanGaps: true
         }]
       },
       options: {
         scales:{
             x:{
-                display: true,
-                type: 'logarithmic'
+                display: true
             },
             y:{
                 display: true
             }
-        }
+        },
+        spanGaps: true
       }
     });
 
@@ -479,16 +480,16 @@ async function UplinkStatus(btn){
             let status = 0
             switch(dataParse[1]){
                 case 'TO': 
-                dataStream.push(parseFloat('0.0001'))
-                dataTime.push(parseFloat('0.0001'))
+                dataStream.push(parseFloat('0'))
+                dataTime.push(parseFloat('0'))
                 break;
                 case 'CR': 
-                dataStream.push(parseFloat('0.0001'))
-                dataTime.push(parseFloat('0.0001'))
+                dataStream.push(parseFloat('0'))
+                dataTime.push(parseFloat('0'))
                 break;
                 case 'ERR': 
-                dataStream.push(parseFloat('0.0001'))
-                dataTime.push(parseFloat('0.0001'))
+                dataStream.push(parseFloat('0'))
+                dataTime.push(parseFloat('0'))
                 break;
                 default:
                 status = 1

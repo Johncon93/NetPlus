@@ -56,9 +56,9 @@
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb">
                     <li class="breadcrumb-item"><a href="/" onclick="stopICMP()">Home</a></li>
-                    <li class="breadcrumb-item active"><a href="/<%=orgId%>" id="orgUri"><%=orgId%></a></li>
-                    <li class="breadcrumb-item active"><a href="/<%=orgId%>/<%=siteId%>" id="siteUri"><%=siteId%></a></li>
-                    <li class="breadcrumb-item active" aria-current="page"><a href="/<%=orgId%>/<%=siteId%>/<%=netId%>" id="netUri"><%=netId%></a></li>
+                    <li class="breadcrumb-item active"><a href="/organisations/<%=orgId%>" id="orgUri"><%=orgId%></a></li>
+                    <li class="breadcrumb-item active"><a href="/organisations/<%=orgId%>/<%=siteId%>" id="siteUri"><%=siteId%></a></li>
+                    <li class="breadcrumb-item active" aria-current="page"><a id="netUri" disabled><%=netId%></a></li>
                   </ol>
               </nav>
             </nav>
@@ -97,9 +97,9 @@
                   <h4><small>Uplink history</small></h4>
                   <hr>
                   <div class="btn-group btn-group-justified">
-                    <a id="history60" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">1 Hour</a>
-                    <a id="history1440" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">24 Hour</a>
-                    <a id="history8640" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">30 Day</a>
+                    <a id="history30" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">1 Hour</a>
+                    <a id="history720" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">24 Hour</a>
+                    <a id="history4320" class="btn btn-primary" onclick="UplinkHistory(this)" data-url="/history/<%=netId%>">30 Day</a>
                   </div>
                   
                   <div class="collapse" id="collapseExample">
